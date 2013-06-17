@@ -1,0 +1,13 @@
+{
+  "name": "daydreamerjs",
+  "version": "0.0.0",
+  "main": "daydreamer.js",
+  "dependencies": {
+    "requirejs": "~2.1.6"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ]
+}
