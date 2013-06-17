@@ -1,0 +1,20 @@
+{
+  "name": "daydreamerjs",
+  "version": "0.0.0",
+  "description": "Yet another JavaScript library using RequireJS. Inspired by Dojo, Underscore, Backbone and has.js. Still a work in progress.",
+  "main": "daydreamer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/skibblenybbles/daydreamerjs.git"
+  },
+  "author": "Mike Kibbel",
+  "license": "DWTFPL",
+  "readmeFilename": "README.md",
+  "gitHead": "3a802d09ac691b0115a44fcab756d116db105226",
+  "bugs": {
+    "url": "https://github.com/skibblenybbles/daydreamerjs/issues"
+  }
+}
