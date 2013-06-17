@@ -16,5 +16,8 @@
   "gitHead": "3a802d09ac691b0115a44fcab756d116db105226",
   "bugs": {
     "url": "https://github.com/skibblenybbles/daydreamerjs/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1"
   }
 }
