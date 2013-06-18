@@ -18,6 +18,7 @@
     "url": "https://github.com/skibblenybbles/daydreamerjs/issues"
   },
   "devDependencies": {
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "grunt-contrib-requirejs": "~0.4.1"
   }
 }
