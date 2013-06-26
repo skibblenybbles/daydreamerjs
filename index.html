@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf8">
+    <title>DayDreamerJS</title>
+    
+    <script src="components/requirejs/require.js"></script>
+    <!-- <script src="build/production/require.js"></script> -->
+    <script>
+        require.config({
+            baseUrl: "daydreamer",
+            //baseUrl: "build/production",
+            urlArgs: "bust=" +  (new Date()).getTime()
+        });
+    </script>
+    <script>
+        // Export daydreamer so we can use it in the console.
+        var daydreamer;
+        require(["daydreamer"], function(root) {
+            daydreamer = root;
+        });
+    </script>
+</head>
+<body>
+    <h1>DayDreamerJS</h1>
+</body>
+</html>
