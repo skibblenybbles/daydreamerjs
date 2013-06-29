@@ -9,6 +9,7 @@ define(
         var
             // The global object.
             root = language.root,
+            nil = language.nil,
             
             // Convenience / compression aliases.
             undefined = void 0,
@@ -18,7 +19,7 @@ define(
             Object = root.Object,
             Array = root.Array,
             ArrayIsArray = Array.isArray,
-            toString = object.toString,
+            string = object.string,
             
             // String names of built-in types.
             // We'll use the "typeof" names for well-behaved types and 
@@ -29,88 +30,66 @@ define(
             nameString = typeof "",
             nameBoolean = typeof true,
             nameObject = typeof {},
-            nameArray = toString([]),
-            nameRegExp = toString(/ /),
-            nameFunction = toString(function() {}),
+            nameArray = string([]),
+            nameRegExp = string(/ /),
+            nameFunction = string(function() {}),
             
-            // Safely resolve a value, given an object and property.
-            // This masks lookups like obj[undefined], but that's
-            // the price we have to pay to keep this relatively cheap.
-            resolve = function(obj, property) {
-                return typeof property !== nameUndefined
-                    ? obj !== null && typeof obj !== nameUndefined
-                        ? obj[property]
-                        : undefined
-                    : obj;
+            // Is the given object undefined?
+            isUndefined = function(obj) {
+                return obj === undefined;
             },
             
-            // Is the given object or property undefined?
-            isUndefined = function(obj, property) {
-                return resolve(obj, property) === undefined;
-            },
-            
-            // Is the given object or property a Number?
-            isNumber = function(obj, property) {
-                obj = resolve(obj, property);
+            // Is the given object a Number?
+            isNumber = function(obj) {
                 return typeof obj === nameNumber || obj instanceof Number;
             },
             
-            // Is the given object or property a finite Number?
-            isFiniteNumber = function(obj, property) {
-                obj = resolve(obj, property);
-                return (typeof obj === nameNumber || obj instanceof Number) &&
-                    isFinite(obj);
+            // Is the given object a finite Number?
+            isFiniteNumber = function(obj) {
+                return isNumber(obj) && isFinite(obj);
             },
             
-            // Is the given object or property a String?
-            isString = function(obj, property) {
-                obj = resolve(obj, property);
+            // Is the given object a String?
+            isString = function(obj) {
                 return typeof obj === nameString || obj instanceof String;
             },
             
-            // Is the given object or property a Boolean?
-            isBoolean = function(obj, property) {
-                obj = resolve(obj, property);
+            // Is the given object a Boolean?
+            isBoolean = function(obj) {
                 return obj === true || 
                     obj === false || 
                     typeof obj === nameBoolean || 
                     obj instanceof Boolean;
             },
             
-            // Is the given object or property an Object?
-            isObject = function(obj, property) {
-                obj = resolve(obj, property);
+            // Is the given object an Object?
+            isObject = function(obj) {
                 return obj !== undefined && (
-                    obj === null ||
+                    obj === nil ||
                     typeof obj === nameObject ||
                     isArray(obj) ||
                     isRegExp(obj) ||
                     isFunction(obj));
             },
             
-            // Is the given object or property an Object literal or "new"
+            // Is the given object an Object literal or "new"
             // instance of Object?
-            isObjectLiteral = function(obj, property) {
-                obj = resolve(obj, property);
+            isObjectLiteral = function(obj) {
                 return obj && obj.constructor === Object;
             },
             
-            // Is the given object or property an Array?
+            // Is the given object an Array?
             // (defer to the built-in, if available)
             isArray = ArrayIsArray
-                ? function(obj, property) {
-                    return ArrayIsArray(resolve(obj, property));
-                }
-                : function(obj, property) {
-                    obj = resolve(obj, property);
+                ? ArrayIsArray
+                : function(obj) {
                     return obj instanceof Array || 
-                        toString(obj) === nameArray;
+                        string(obj) === nameArray;
                 },
             
-            // Is the given object or property "like" an Array?
-            isArrayLike = function(obj, property) {
+            // Is the given object "like" an Array?
+            isArrayLike = function(obj) {
                 var tagName;
-                obj = resolve(obj, property);
                 tagName = obj.tagName;
                 return obj && 
                     obj !== undefined &&
@@ -120,23 +99,20 @@ define(
                     (isArray(obj) || isFinite(obj.length));
             },
             
-            // Is the given object or property a RegExp?
-            isRegExp = function(obj, property) {
-                obj = resolve(obj, property);
-                return toString(obj) === nameRegExp;
+            // Is the given object a RegExp?
+            isRegExp = function(obj) {
+                return string(obj) === nameRegExp;
             },
             
-            // Is the given object or property a Function?
-            isFunction = function(obj, property) {
-                obj = resolve(obj, property);
-                return toString(obj) === nameFunction;
+            // Is the given object a Function?
+            isFunction = function(obj) {
+                return string(obj) === nameFunction;
             },
             
-            // Is the given object or property a built-in or something
-            // else that should be reported as a function?
-            // This is called an "alien" in Crockford's terminology.
-            isFunctionLike = function(obj, property) {
-                obj = resolve(obj, property);
+            // Is the given object a built-in or something else that
+            // should be reported as a function? This is called an 
+            // "alien" in Crockford's terminology.
+            isFunctionLike = function(obj) {
                 return obj &&
                     !isFunction(obj) &&
                     /\{\s*\[native code]\]\s*\}/.test(String(obj));
@@ -148,11 +124,21 @@ define(
             // own risk.
             nonHostTypes = {},
             isHostType = function(obj, property) {
-                var value = resolve(obj, property),
+                var value = get(obj, property),
                     type = typeof value;
                 return type === nameObject ?
                     !!value
                     : !nonHostTypes[type];
+            },
+            
+            // Safely gets a value, given an object and property.
+            // This masks lookups like obj[undefined].
+            get = function(obj, property) {
+                return typeof property !== nameUndefined
+                    ? obj !== nil && typeof obj !== nameUndefined
+                        ? obj[property]
+                        : undefined
+                    : obj;
             };
         
         // Populate the non-host types.

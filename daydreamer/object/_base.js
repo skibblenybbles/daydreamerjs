@@ -18,10 +18,10 @@ define(
             objectValueOf = ObjectPrototype.valueOf,
             
             // "Unbind" object's methods so they can be called
-            // in functional style. Use a better name for hasOwnProperty().
+            // in functional style. Use shorter names for the built-ins.
             owns = fn(objectHasOwnProperty),
-            toString = fn(objectToString),
-            valueOf = fn(objectValueOf),
+            string = fn(objectToString),
+            value = fn(objectValueOf),
             
             // object()
             object = function() {
@@ -34,8 +34,8 @@ define(
         // Exports.
         object.proto = ObjectPrototype;
         object.owns = owns;
-        object.toString = toString;
-        object.valueOf = valueOf;
+        object.string = string;
+        object.value = value;
         
         return object;
     }

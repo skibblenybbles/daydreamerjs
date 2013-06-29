@@ -8,6 +8,8 @@ define(
             // Convenience / compression aliases.
             root = language.root,
             pname = language.pname,
+            lname = language.lname,
+            nil = language.nil,
             
             Object = root.Object,
             ObjectPrototype = Object[pname],
@@ -53,7 +55,7 @@ define(
                         if (this instanceof bound) {
                             construct[pname] = fn[pname];
                             self = new construct;
-                            construct[pname] = null;
+                            construct[pname] = nil;
                             result = fn.apply(self, args);
                             return Object(result) === result
                                 ? result
@@ -107,6 +109,7 @@ define(
             // Return a function that intercepts and transforms the given
             // function's arguments and return value.
             around = function(fn, beforeTransform, afterTransform) {
+                var args = arguments;
                 return (
                     isFunction(beforeTransform)
                         ? isFunction(afterTransform)
@@ -116,13 +119,33 @@ define(
                                         concat(
                                             [apply(fn, this,
                                                 apply(beforeTransform, this,
-                                                    arguments))],
-                                            slice(arguments))));
+                                                    args))],
+                                            slice(args))));
                             }
                             : before(fn, beforeTransform)
                         : isFunction(afterTransform)
                             ? after(fn, afterTransform)
                             : fn);
+            },
+            
+            // Compose functions.
+            compose = function() {
+                var fns = arguments;
+                
+                return function() {
+                    var length = fns[lname],
+                        i = length - 1,
+                        value = arguments;
+                    
+                    if (length > 0) {
+                        value = apply(fns[i], this, value);
+                        i--;
+                        for (; i >= 0; i--) {
+                            value = call(fns[i], this, value);
+                        }
+                    }
+                    return value;
+                }
             },
             
             // "Unbind" Function's other methods so they can be called
@@ -133,21 +156,23 @@ define(
             // Avoid circular imports by redefining a few utilties.
             concat = fn(arrayConcat),
             slice = fn(arraySlice),
-            toString = fn(objectToString),
+            string = fn(objectToString),
             
-            nameFunction = toString(function() {}),
+            nameFunction = string(function() {}),
             isFunction = function(obj) {
-                return toString(obj) === nameFunction;
+                return string(obj) === nameFunction;
             };
         
         
         // Exports.
         fn.proto = FunctionPrototype,
+        fn.identity = identity;
         fn.bind = bind;
         fn.partial = partial;
         fn.before = before;
         fn.after = after;
         fn.around = around;
+        fn.compose = compose;
         fn.apply = apply;
         fn.call = call;
         

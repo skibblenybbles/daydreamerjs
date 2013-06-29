@@ -18,7 +18,7 @@ define(
                     Test = function() {
                         this.toString = 1;
                     };
-                for (property in new Test()) {
+                for (property in new Test) {
                     count += 1;
                 }
                 return count === expected;
@@ -29,8 +29,7 @@ define(
         // Note: this is targeted to a known bug in IE6-8. It's not
         // robust, because it does not make any attempt to find shadowed
         // properties. Rather, it tests for the shadowing of "toString"
-        // and is used by other features in this library to infer a
-        // known set of shadowed properties.
+        // and can be used to infer a known set of shadowed properties.
         add("bug-for-in-skips-shadowed", function() {
             return inspectForIn(0);
         });
@@ -38,12 +37,11 @@ define(
         // Test for "shadowed" properties repeated in a for...in loop.
         // Note: this is targeted to a known bug in Safari 2. It's
         // not robust, because it does not make any attempt to find all
-        // repeated, shoadowed properties. This test is not used by this
-        // library. The bug is avoided through other logical means.
+        // repeated, shoadowed properties. This may cause problems if
+        // you are writing a for...in loop with side effects.
         add("bug-for-in-repeats-shadowed", function() {
             return inspectForIn(2);
         });
-        
         
         // Exports.
         return has;

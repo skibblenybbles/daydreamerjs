@@ -17,14 +17,16 @@ define(
             doc = isHostType(root, "document") && root.document,
             
             // A generic <div> for element testing.
-            div = doc && isHostType(doc, "createElement") && doc.createElement("DiV"),
+            div = doc && 
+                isHostType(doc, "createElement") && 
+                doc.createElement("DiV"),
             
             // The cache of has() test results.
             cache = {},
             
             // Does the environment has the given feature?
             has = function(name) {
-                if (isFunction(cache, name)) {
+                if (isFunction(cache[name])) {
                     cache[name] = cache[name](root, doc, div);
                 }
                 return cache[name];

@@ -4,15 +4,17 @@ define(
         "./function",
         "./has",
         "./language",
-        "./object"
+        "./object",
+        "./string"
     ],
-    function(array, fn, has, language, object) {
+    function(array, fn, has, language, object, string) {
         return {
             array: array,
             fn: fn,
             has: has,
             language: language,
-            object: object
+            object: object,
+            string: string
         };
     }
 );

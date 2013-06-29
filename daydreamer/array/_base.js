@@ -7,21 +7,22 @@ define(
         
         var
             // Convenience / compression aliases.
+            undefined = void 0,
+            
             root = language.root,
             pname = language.pname,
+            lname = language.lname,
+            nil = language.nil,
             
             Math = root.Math,
             min = Math.min,
             max = Math.max,
             
-            isArray = language.isArray,
-            isArrayLike = language.isArrayLike,
+            isFunction = language.isFunction,
             isNumber = language.isNumber,
-            isFiniteNumber = language.isFiniteNumber,
-            apply = fn.apply,
+            
+            partial = fn.partial,
             call = fn.call,
-            before = fn.before,
-            around = fn.around,
             
             Array = root.Array,
             ArrayPrototype = Array[pname],
@@ -46,40 +47,22 @@ define(
             arraySplice = ArrayPrototype.splice,
             arrayUnshift = ArrayPrototype.unfshift,
             
-            // A utility for reversing the array in the first argument.
-            reverseFirstArgument = function(obj) {
-                return concat(reversed(obj), slice(arguments, 1));
-            },
-            
-            // A utility for inverting the reversing index with respect
-            // to the length of the array in the first argument.
-            reverseReturnIndex = function(length, obj) {
-                return length < 0
-                    ? length
-                    : obj.length - 1 - length;
-            },
-            
-            // Shallow copy of an array or array-like object.
-            copy = function(obj) {
-                return slice(obj);
-            },
-            
-            // Return a copy of the given array or array-like object
-            // sliced with negative indices and optional stepping,
-            // a la Python.
-            sliced = function(obj, start, end, step) {
-                var array,
-                    length,
-                    step,
+            // Iterate over each item in an array, with optional slicing
+            // and steppning, calling the given function. The callback
+            // function is similar to forEach, except it will be passed a
+            // function as the first parameter that can be called to stop
+            // iteration.
+            ieach = function(array, fn, context, start, end, step) {
+                var length = array[lname],
+                    looping = true,
+                    stop = function(value) {
+                        looping = false;
+                        return value;
+                    },
+                    result,
                     i;
                 
-                // Defer to built-in slice?
-                if (!isFiniteNumber(step)) {
-                    return slice(obj, start, end);
-                }
-                
-                array = [];
-                length = obj.length;
+                context = context || this;
                 step = step || 1;
                 start = isNumber(start)
                     ? start >= 0
@@ -99,17 +82,173 @@ define(
                 if (step > 0) {
                     start = max(0, start);
                     end = min(length, end);
-                    for (i = start; i < end; i += step) {
-                        push(array, obj[i]);
-                    }
                 } else {
                     start = min(length - 1, start);
                     end = max(-1, end);
-                    for (i = start; i > end; i += step) {
-                        push(array, obj[i]);
-                    }
                 }
-                return array;
+                for (i = start; 
+                    looping && 
+                        ((step > 0 && i < end) || 
+                        (step < 0 && i > end));
+                    i += step) {
+                    result = call(fn, context, 
+                        stop, array[i], i, array);
+                }
+            },
+            
+            // Generate an iterative array reducer.
+            imkreduce = function(step) {
+                return function(array, op, initial, context) {
+                    var value = isFunction(initial)
+                            ? initial()
+                            : initial,
+                        start = step > 0
+                            ? 0
+                            : array[lname] - 1;
+                    
+                    if (arguments[lname] < 3) {
+                        value = array[start];
+                        start += step;
+                    }
+                    ieach(array,
+                        function(stop, obj, i, array) {
+                            value = call(op, this,
+                                stop, value, obj, i, array);
+                        }, context || this, start, nil, step);
+                    return value;
+                };
+            },
+            
+            // Generate an operator that evaluates a function inside an ieach
+            // loop with the given context and optionally short-circuits or
+            // modifies the result.
+            imkunop = function(op, fn, context) {
+                return function(stop, value, i, array) {
+                    return op(stop,
+                        call(fn, context || this,
+                            value, i, array),
+                        value, i, array);
+                };
+            },
+            
+            // Generate an operator that evaluates a function inside an
+            // ireduce loop with the given context and optionally short-circuits
+            // or modifies the accumulator.
+            imkbinop = function(op, fn, context) {
+                return function(stop, acc, value, i, array) {
+                    return op(stop, acc,
+                        call(fn, context || this,
+                            value, i, array),
+                        value, i, array);
+                };
+            },
+            
+            // Iterative reduce.
+            ireduce = imkreduce(1),
+            
+            // Iterative right reduce.
+            irreduce = imkreduce(-1),
+            
+            // Identity operator which evaluates a function inside an ieach
+            // loop with the  given context.
+            id = partial(imkunop, function(stop, result) {
+                return result;
+            }),
+            
+            // Short-circuiting identity operator which evaluates a predicate
+            // in the given context to determine whether to return the value.
+            ifid = partial(imkunop, function(stop, result, value) {
+                if (result) {
+                    return stop(value);
+                }
+            }),
+            
+            // Short-circuiting unary and operator which evaluates a predicate
+            // in the given context.
+            and = partial(imkunop, function(stop, result) {
+                result = !!result;
+                return !result ? stop(result) : result;
+            }),
+            
+            // Short-circuiting unary or operator which evaluates a predicate
+            // in the given context.
+            or = partial(imkunop, function(stop, result) {
+                result = !!result;
+                return result ? stop(result) : result;
+            }),
+            
+            // Array-accumulating binary operator which evaluates a function
+            // in the given context to transform the values to accumulate.
+            collect = partial(imkbinop, function(stop, acc, result) {
+                push(acc, result);
+                return acc;
+            }),
+            
+            // Conditional array-accumulating binary operator which evaluates 
+            // a predicate in the given context to determine which of the
+            // values to accumulate.
+            ifcollect = partial(imkbinop, function(stop, acc, result, value) {
+                if (result) {
+                    push(acc, value);
+                }
+                return acc;
+            }),
+            
+            mkarray = function() {
+                return [];
+            },
+            
+            mkeach = function(step, mkunop) {
+                return function(array, fn, context) {
+                    return ieach(array,
+                        mkunop(fn, context || this),
+                        nil, nil, nil, step);
+                };
+            },
+            
+            mkreduce = function(ireducer) {
+                return function(array, op, initial, context)  {
+                    return ireducer(array,
+                        function(stop, previous, next, i, array) {
+                            return call(op, context || this,
+                                previous, next, i, array);
+                        }, initial || nil);
+                };
+            },
+            
+            mkreduction = function(ireducer, mkbinop, initial) {
+                return function(array, fn, context) {
+                    return ireducer(array, 
+                        mkbinop(fn, context || this), initial);
+                };
+            },
+            
+            mkwhich = function(step) {
+                return function(array, item) {
+                    ieach(array, function(stop, value, i) {
+                        if (item === value) {
+                            return stop(i);
+                        }
+                    }, nil, nil, nil, step);
+                    return -1;
+                };
+            },
+            
+            // Make a shallow copy of an array or array-like object.
+            copy = function(obj) {
+                return slice(obj);
+            },
+            
+            // Return a copy of the given array or array-like object sliced 
+            // with optionally negative indices and optional stepping,
+            // a la Python.
+            sliced = function(array, start, end, step) {
+                var results = [];
+                ieach(array,
+                    function(stop, value, i, array) {
+                        push(results, value);
+                    }, nil, start, end, step);
+                return results;
             },
             
             // Return a reversed copy of the given array or array-like object.
@@ -127,8 +266,7 @@ define(
             },
             
             // "Unbind" Array's methods so they can be called
-            // in functional style. Use a better names for forEach(),
-            // indexOf(), lastIndexOf(), reduceRight() and some().
+            // in functional style. Use better names throughout.
             concat = fn(arrayConcat),
             join = fn(arrayJoin),
             pop = fn(arrayPop),
@@ -140,146 +278,68 @@ define(
             splice = fn(arraySplice),
             unshift = fn(arrayUnshift),
             
-            every = arrayEvery
-                ? fn(arrayEvery)
-                : function(obj, predicate, context) {
-                    var result = true,
-                        length = obj.length,
-                        i;
-                    
-                    for (i = 0; i < length; i++) {
-                        result = result && call(predicate, context || this,
-                            obj[i], i, obj);
-                        if (!result) {
-                            return result;
-                        }
-                    }
-                    return result;
-                },
-            
-            filter = arrayFilter
-                ? fn(arrayFilter)
-                : function(obj, predicate, context) {
-                    var results = [];
-                    each(obj, function(value) {
-                        if (apply(predicate, context || this, arguments)) {
-                            push(results, value);
-                        }
-                    });
-                    return results;
-                },
-            
             each = arrayForEach
                 ? fn(arrayForEach)
-                : function(obj, predicate, context) {
-                    var results = [],
-                        length = obj.length,
-                        i;
-                    
-                    for (i = 0; i < length; i++) {
-                        push(results,
-                            call(predicate, context || this, obj[i], i, obj));
-                    }
-                    return results;
-                },
+                : mkeach(1, id),
             
-            which = arrayIndexOf
-                ? fn(arrayIndexOf)
-                : function(obj, item) {
-                    var length = obj.length,
-                        i;
-                    for (i = 0; i < length; i++) {
-                        if (obj[i] === item) {
-                            return i;
-                        }
-                    }
-                    return -1;
-                },
+            reach = mkeach(-1, id),
             
-            rwhich = arrayLastIndexOf
-                ? fn(arrayLastIndexOf)
-                : around(which, reverseFirstArgument, reverseReturnIndex),
+            all = arrayEvery
+                ? fn(arrayEvery)
+                : mkeach(1, and),
             
-            map = arrayMap
-                ? fn(arrayMap)
-                : function(obj, predicate, context) {
-                    var results = [];
-                    each(obj, function() {
-                        push(results,
-                            apply(predicate, context || this, arguments));
-                    });
-                    return results;
-                },
-            
-            reduce = arrayReduce
-                ? before(fn(arrayReduce),
-                    function(obj, predicate, initial, context) {
-                        return [
-                            obj, bind(predicate, context), initial, context];
-                    })
-                : function(obj, predicate, initial, context) {
-                    if (arguments.length < 3) {
-                        return reduce(
-                            slice(obj, 1), predicate, obj[0], context);
-                    }
-                    each(obj, function(obj, i, array) {
-                        initial = call(predicate, context || this, 
-                            initial, obj, i, array);
-                    });
-                    return initial;
-                },
-            
-            rreduce = arrayReduceRight
-                ? fn(arrayReduceRight)
-                : before(reduce, reverseFirstArgument),
+            rall = mkeach(-1, and),
             
             any = arraySome
                 ? fn(arraySome)
-                : function(obj, predicate, context) {
-                    var result = false,
-                        length = obj.length,
-                        i;
-                    
-                    for (i = 0; i < length; i++) {
-                        result = result || call(predicate, context || this,
-                            obj[i], i, obj);
-                        if (result) {
-                            return result;
-                        }
-                    }
-                    return result;
-                },
+                : mkeach(1, or),
             
-            // Add some other reversed "r*" methods for symmetry.
-            revery = before(every, reverseFirstArgument),
-            rfilter = before(filter, reverseFirstArgument),
-            reach = before(each, reverseFirstArgument),
-            rmap = before(map, reverseFirstArgument),
-            rany = before(any, reverseFirstArgument),
+            rany = mkeach(-1, or),
             
-            // Add some other flavor.
-            find = function(obj, predicate, context) {
-                var result;
-                any(obj, function(value) {
-                    if (apply(predicate, context || this, arguments)) {
-                        result = value;
-                        return true;
-                    }
-                });
-                return result;
-            },
+            find = mkeach(1, ifid),
             
-            rfind = before(find, reverseFirstArgument),
+            rfind = mkeach(-1, ifid),
+            
+            reduce = arrayReduce
+                ? fn(arrayReduce)
+                : mkreduce(ireduce),
+            
+            rreduce = arrayReduceRight
+                ? fn(arrayReduceRight)
+                : mkreduce(irreduce),
+            
+            map = arrayMap
+                ? fn(arrayMap)
+                : mkreduction(ireduce, collect, mkarray),
+            
+            rmap = mkreduction(irreduce, collect, mkarray),
+            
+            filter = arrayFilter
+                ? fn(arrayFilter)
+                : mkreduction(ireduce, ifcollect, mkarray),
+            
+            rfilter = mkreduction(irreduce, ifcollect, mkarray),
+            
+            which = arrayIndexOf
+                ? fn(arrayIndexOf)
+                : mkwhich(1),
+            
+            rwhich = arrayLastIndexOf
+                ? fn(arrayLastIndexOf)
+                : mkwhich(-1),
             
             // Convert the given arguments into an array.
             array = function() {
                 return slice(arguments);
             };
-        
+            
         
         // Exports.
         array.proto = ArrayPrototype;
         array.copy = copy;
+        array.sliced = sliced;
+        array.reversed = reversed;
+        array.sorted = sorted;
         array.concat = concat;
         array.join = join;
         array.pop = pop;
@@ -290,16 +350,16 @@ define(
         array.sort = sort;
         array.splice = splice;
         array.unshift = unshift;
-        array.every = every;
-        array.filter = filter;
-        array.each = each;
-        array.which = which;
-        array.rwhich = rwhich;
+        array.all = all;
+        array.any = any;
         array.map = map;
         array.reduce = reduce;
+        array.each = each;
+        array.filter = filter;
+        array.which = which;
+        array.rwhich = rwhich;        
         array.rreduce = rreduce;
-        array.any = any;
-        array.revery = revery;
+        array.rall = rall;
         array.rfilter = rfilter;
         array.reach = reach;
         array.rmap = rmap;

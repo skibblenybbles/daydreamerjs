@@ -5,16 +5,25 @@ module.exports = function(grunt) {
             options: {
                 baseUrl: "./daydreamer",
                 paths: {
-                    "require": "../components/requirejs/require"
+                    "requirejs": "../components/requirejs/require"
                 },
                 modules: [
+                    // This is used to build daydreamer as a standalone file
+                    // without requirejs baked in.
                     {
                         name: "daydreamer",
                         include: []
                     }
+                    /*
+                    // This is used to build a single file for daydremaer with
+                    // requirejs baked in.
+                    {
+                        name: "daydreamer",
+                        include: ["requirejs"]
+                    }
+                    */
                 ],
-                optimize: "uglify2",
-                optimizeAllPluginResources: true
+                optimize: "uglify2"
             },
             production: {
                 options: {
@@ -23,7 +32,8 @@ module.exports = function(grunt) {
                         output: {
                             max_line_len: 1000
                         }
-                    }
+                    }/*,
+                    removeCombined: true*/
                 }
             },
             development: {
