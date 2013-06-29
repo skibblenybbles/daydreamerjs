@@ -30,7 +30,6 @@ define(
                 // from various kinds of parameters.
             };
         
-        
         // Exports.
         object.proto = ObjectPrototype;
         object.owns = owns;
