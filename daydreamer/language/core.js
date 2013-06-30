@@ -1,10 +1,9 @@
 define(
     [
         "./_base",
-        "../function/_base",
         "../object/_base"
     ],
-    function(language, fn, object) {
+    function(language, object) {
         
         var
             // The global object.

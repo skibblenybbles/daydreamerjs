@@ -1,6 +1,6 @@
 define(
     [
-        "../language/types"
+        "../language/core"
     ],
     function(language) {
         

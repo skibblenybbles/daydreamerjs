@@ -26,11 +26,6 @@ define(
             // A reusable constructor for prototype hacks.
             construct = function() {},
             
-            // The identity function.
-            identity = function(value) {
-                return value;
-            },
-            
             // Return the given function bound to an object with optional 
             // curried arguments. Defer to the built-in, if available.
             bind = functionBind
@@ -57,7 +52,6 @@ define(
                         }
                         return fn.apply(context, args);
                     };
-                    
                     return bound;
                 },
             

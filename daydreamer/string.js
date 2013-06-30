@@ -1,6 +1,8 @@
 define(
     [
-        "./string/_base"
+        "./string/_base",
+        // Mixins.
+        "./string/core"
     ],
     function(base) {
         return base;

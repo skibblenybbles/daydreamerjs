@@ -15,7 +15,7 @@ module.exports = function(grunt) {
                         include: []
                     }
                     /*
-                    // This is used to build a single file for daydremaer with
+                    // This is used to build a single file for daydreamer with
                     // requirejs baked in.
                     {
                         name: "daydreamer",

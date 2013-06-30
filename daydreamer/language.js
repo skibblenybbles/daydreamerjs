@@ -1,8 +1,9 @@
 define(
     [
         "./language/_base",
-        "./language/for-in",
-        "./language/types"
+        // Mixins.
+        "./language/core",
+        "./language/for-in"
     ], 
     function(base) {
         return base;
