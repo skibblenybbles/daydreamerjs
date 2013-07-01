@@ -11,7 +11,8 @@ define(
             pname = "prototype",
             lname = "length",
             
-            // A variable name for null.
+            // Variable names for undefined and null.
+            undef = void 0,
             nil = null,
             
             // language(). Silly.

@@ -1,9 +1,8 @@
 define(
     [
-        "object/_base",
+        "./object/_base",
         // Mixins.
-        "object/core",
-        "object/mixin"
+        "./object/core"
     ],
     function(base) {
         return base;

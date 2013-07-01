@@ -11,8 +11,8 @@ define(
             root = language.root,
             pname = language.pname,
             lname = language.lname,
+            undef = language.undef,
             nil = language.nil,
-            
             isNumber = language.isNumber,
             
             partial = fn.partial,
@@ -94,7 +94,7 @@ define(
             },
             
             // Identity operator which evaluates a function inside an ieach
-            // loop with the  given context.
+            // loop with the given context.
             id = partial(imkunop, function(stop, result) {
                 return result;
             }),
@@ -121,11 +121,15 @@ define(
                 return result ? stop(result) : result;
             }),
             
-            mkeach = function(step, mkunop) {
+            mkeach = function(step, mkunop, defaultResult) {
                 return function(array, fn, context) {
-                    return ieach(array,
+                    var result = ieach(array,
                         mkunop(fn, context || this),
                         nil, nil, nil, step);
+                    
+                    return result !== undef
+                        ? result
+                        : defaultResult;
                 };
             },
             
@@ -149,15 +153,15 @@ define(
             
             all = arrayEvery
                 ? fn(arrayEvery)
-                : mkeach(1, and),
+                : mkeach(1, and, true),
             
-            rall = mkeach(-1, and),
+            rall = mkeach(-1, and, true),
             
             any = arraySome
                 ? fn(arraySome)
-                : mkeach(1, or),
+                : mkeach(1, or, false),
             
-            rany = mkeach(-1, or),
+            rany = mkeach(-1, or, false),
             
             find = mkeach(1, ifid),
             

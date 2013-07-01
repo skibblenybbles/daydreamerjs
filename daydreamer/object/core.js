@@ -1,6 +1,10 @@
 define(
     [
-        "./_base"
+        "./_base",
+        // Mixins.
+        "./each",
+        "./reduce",
+        "./mixin"
     ],
     function(object) {
         

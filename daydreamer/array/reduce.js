@@ -14,13 +14,12 @@ define(
             pname = language.pname,
             lname = language.lname,
             nil = language.nil,
-            
             isFunction = language.isFunction,
             
             partial = fn.partial,
             call = fn.call,
             
-            push = array.push,
+            arrayPush = array.push,
             ieach = array.ieach,
             
             Array = root.Array,
@@ -41,6 +40,7 @@ define(
                             ? 0
                             : array[lname] - 1;
                     
+                    context = context || this;
                     if (arguments[lname] < 3) {
                         value = array[start];
                         start += step;
@@ -49,7 +49,7 @@ define(
                         function(stop, obj, i, array) {
                             value = call(op, this,
                                 stop, value, obj, i, array);
-                        }, context || this, start, nil, step);
+                        }, context, start, nil, step);
                     return value;
                 };
             },
@@ -74,17 +74,17 @@ define(
             
             // Array-accumulating binary operator which evaluates a function
             // in the given context to transform the values to accumulate.
-            collect = partial(imkbinop, function(stop, acc, result) {
-                push(acc, result);
+            push = partial(imkbinop, function(stop, acc, result) {
+                arrayPush(acc, result);
                 return acc;
             }),
             
             // Conditional array-accumulating binary operator which evaluates 
             // a predicate in the given context to determine which of the
             // values to accumulate.
-            ifcollect = partial(imkbinop, function(stop, acc, result, value) {
+            ifpush = partial(imkbinop, function(stop, acc, result, value) {
                 if (result) {
-                    push(acc, value);
+                    arrayPush(acc, value);
                 }
                 return acc;
             }),
@@ -93,9 +93,16 @@ define(
                 return [];
             },
             
-            mkreduce = function(ireducer) {
+            mkreduction = function(ireduce, mkbinop, initial) {
+                return function(array, fn, context) {
+                    return ireduce(array, 
+                        mkbinop(fn, context || this), initial);
+                };
+            },
+            
+            mkreduce = function(ireduce) {
                 return function(array, op, initial, context)  {
-                    return ireducer(array,
+                    return ireduce(array,
                         function(stop, previous, next, i, array) {
                             return call(op, context || this,
                                 previous, next, i, array);
@@ -103,43 +110,36 @@ define(
                 };
             },
             
-            mkreduction = function(ireducer, mkbinop, initial) {
-                return function(array, fn, context) {
-                    return ireducer(array, 
-                        mkbinop(fn, context || this), initial);
-                };
-            },
-            
             // Polyfill array's methods.
+            map = arrayMap
+                ? fn(arrayMap)
+                : mkreduction(ireduce, push, mkarray),
+            
+            rmap = mkreduction(irreduce, push, mkarray),
+            
+            filter = arrayFilter
+                ? fn(arrayFilter)
+                : mkreduction(ireduce, ifpush, mkarray),
+            
+            rfilter = mkreduction(irreduce, ifpush, mkarray),
+            
             reduce = arrayReduce
                 ? fn(arrayReduce)
                 : mkreduce(ireduce),
             
             rreduce = arrayReduceRight
                 ? fn(arrayReduceRight)
-                : mkreduce(irreduce),
-            
-            map = arrayMap
-                ? fn(arrayMap)
-                : mkreduction(ireduce, collect, mkarray),
-            
-            rmap = mkreduction(irreduce, collect, mkarray),
-            
-            filter = arrayFilter
-                ? fn(arrayFilter)
-                : mkreduction(ireduce, ifcollect, mkarray),
-            
-            rfilter = mkreduction(irreduce, ifcollect, mkarray);
+                : mkreduce(irreduce);
         
         // Exports.
         array.ireduce = ireduce;
         array.irreduce = irreduce;
-        array.reduce = reduce;
-        array.rreduce = rreduce;
         array.map = map;
         array.rmap = rmap;
         array.filter = filter;
         array.rfilter = rfilter;
+        array.reduce = reduce;
+        array.rreduce = rreduce;
         
         return array;
     }
