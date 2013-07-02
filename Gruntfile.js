@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
     
     grunt.initConfig({
+        
+        // RequireJS config.
         requirejs: {
             options: {
                 baseUrl: "./daydreamer",
@@ -46,12 +48,40 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+        
+        // Connect config.
+        connect: {
+            options: {
+                port: 8081
+            },
+            server: {
+                options: {
+                    keepalive: true
+                }
+            },
+            test: {}
+        },
+        
+        // QUnit config.
+        qunit: {
+            all: {
+                options: {
+                    urls: [
+                        "http://localhost:8081/tests/example.html"
+                    ]
+                }
+            }
         }
     });
     
     // Load the plugins.
     grunt.loadNpmTasks("grunt-contrib-requirejs");
+    grunt.loadNpmTasks("grunt-contrib-connect");
+    grunt.loadNpmTasks("grunt-contrib-qunit");
     
     // Register tasks.
     grunt.registerTask("default", "requirejs");
+    grunt.registerTask("serve", "connect:server");
+    grunt.registerTask("test", ["connect:test", "qunit:all"]);
 };
