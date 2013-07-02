@@ -25,6 +25,7 @@ define(
         language.cname = cname;
         language.pname = pname;
         language.lname = lname;
+        language.undef = undef;
         language.nil = nil;
         
         return language;

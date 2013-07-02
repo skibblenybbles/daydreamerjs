@@ -2,6 +2,20 @@ module.exports = function(grunt) {
     
     grunt.initConfig({
         
+        // JSHint config.
+        jshint: {
+            options: {
+                // Turn off line-separated x ? y : z warnings.
+                "-W014": false,
+            },
+            src: [
+                "./Gruntfile.js",
+                "./daydramer/*.js",
+                "./daydreamer/**/*.js",
+                "./daydreamer/**/**/*.js"
+            ]
+        },
+        
         // RequireJS config.
         requirejs: {
             options: {
@@ -55,7 +69,7 @@ module.exports = function(grunt) {
             options: {
                 port: 8081
             },
-            server: {
+            serve: {
                 options: {
                     keepalive: true
                 }
@@ -65,23 +79,26 @@ module.exports = function(grunt) {
         
         // QUnit config.
         qunit: {
-            all: {
-                options: {
-                    urls: [
-                        "http://localhost:8081/tests/example.html"
-                    ]
-                }
-            }
+            options: {
+                urls: [
+                    "http://localhost:8081/tests/example.html"
+                ]
+            },
+            test: {}
         }
     });
     
     // Load the plugins.
+    grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-requirejs");
     grunt.loadNpmTasks("grunt-contrib-connect");
     grunt.loadNpmTasks("grunt-contrib-qunit");
     
     // Register tasks.
-    grunt.registerTask("default", "requirejs");
-    grunt.registerTask("serve", "connect:server");
-    grunt.registerTask("test", ["connect:test", "qunit:all"]);
+    grunt.registerTask("default", "jshint");
+    grunt.registerTask("build", ["jshint", "test", "requirejs"]);
+    grunt.registerTask("quick", ["jshint", "requirejs"]);
+    grunt.registerTask("test", ["connect:test", "qunit:test"]);
+    grunt.registerTask("serve", "connect:serve");
+    
 };

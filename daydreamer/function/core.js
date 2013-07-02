@@ -46,7 +46,7 @@ define(
                     ? function() {
                         return apply(transform, this, concat([apply(fn, this, arguments)], slice(arguments)));
                     }
-                    : fn
+                    : fn;
             },
             
             // Return a function that intercepts and transforms the given
@@ -88,7 +88,7 @@ define(
                         }
                     }
                     return value;
-                }
+                };
             },
             
             // REDUNDANT!

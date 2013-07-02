@@ -8,10 +8,10 @@ define(
         var
             // The global object.
             root = language.root,
+            undef = language.undef,
             nil = language.nil,
             
             // Convenience / compression aliases.
-            undefined = void 0,
             Number = root.Number,
             String = root.String,
             Boolean = root.Boolean,
@@ -24,7 +24,7 @@ define(
             // We'll use the "typeof" names for well-behaved types and 
             // the "nativeToString()" names for typeofs that don't behave similarly
             // across platforms.
-            nameUndefined = typeof undefined,
+            nameUndefined = typeof undef,
             nameNumber = typeof 0,
             nameString = typeof "",
             nameBoolean = typeof true,
@@ -33,9 +33,9 @@ define(
             nameRegExp = string(/ /),
             nameFunction = string(function() {}),
             
-            // Is the given object undefined?
+            // Is the given object undef?
             isUndefined = function(obj) {
-                return obj === undefined;
+                return obj === undef;
             },
             
             // Is the given object a Number?
@@ -63,7 +63,7 @@ define(
             
             // Is the given object an Object?
             isObject = function(obj) {
-                return obj !== undefined && (
+                return obj !== undef && (
                     obj === nil ||
                     typeof obj === nameObject ||
                     isArray(obj) ||
@@ -91,7 +91,7 @@ define(
                 var tagName;
                 tagName = obj.tagName;
                 return obj && 
-                    obj !== undefined &&
+                    obj !== undef &&
                     !isString(obj) &&
                     !isFunction(obj) &&
                     !(tagName && tagName.toLowerCase() === "form") &&
@@ -131,12 +131,12 @@ define(
             },
             
             // Safely gets a value, given an object and property.
-            // This masks lookups like obj[undefined].
+            // This masks lookups like obj[undef].
             get = function(obj, property) {
                 return typeof property !== nameUndefined
                     ? obj !== nil && typeof obj !== nameUndefined
                         ? obj[property]
-                        : undefined
+                        : undef
                     : obj;
             };
         

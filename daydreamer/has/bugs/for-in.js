@@ -18,7 +18,7 @@ define(
                     Test = function() {
                         this.toString = 1;
                     };
-                for (property in new Test) {
+                for (property in new Test()) {
                     count += 1;
                 }
                 return count === expected;

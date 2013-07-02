@@ -2,37 +2,40 @@ define(
     [
         "./_base",
         "../language/_base",
+        "../array/each",
         // Mixins.
         "./each"
     ],
-    function(object, language) {
+    function(object, language, array) {
         
         var 
             // Convenience / compression aliases.
             lname = language.lname,
+            nil = language.nil,
+            
+            arrayslice = array.slice,
+            arrayeach = array.each,
+            arrayreach = array.reach,
             
             each = object.each,
             eachsafe = object.eachsafe,
             eachowned = object.eachowned,
             eachsafeowned = object.eachsafeowned,
             
-            mkmixin = function(step, each) {
+            mkmixin = function(step, oeach) {
+                var aeach = step < 0 ? arrayreach : arrayeach;
+                
                 return function(destination) {
-                    var args = arguments,
-                        length = args[lname],
-                        i = step > 0 ? 1 : length - 1;
-                    
                     if (!destination) {
                         destination = {};
                     }
-                    for (;
-                        (step > 0 && i < length) || (step < 0 && i > 0);
-                        i += step) {
-                        each(args[i],
-                            function(value, key) {
-                                destination[key] = value;
-                            });
-                    }
+                    aeach(arrayslice(arguments, 1),
+                        function(object) {
+                            oeach(object,
+                                function(value, key) {
+                                    destination[key] = value;
+                                });
+                        });
                     return destination;
                 };
             },

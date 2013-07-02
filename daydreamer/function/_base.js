@@ -43,7 +43,7 @@ define(
                         // Was "new" used to call this?
                         if (this instanceof bound) {
                             construct[pname] = fn[pname];
-                            self = new construct;
+                            self = new construct();
                             construct[pname] = nil;
                             result = fn.apply(self, args);
                             return Object(result) === result
@@ -61,7 +61,7 @@ define(
                 var curried = slice(arguments, 1);
                 return function() {
                     return apply(fn, this, concat(curried, slice(arguments)));
-                }
+                };
             },
             
             // Return the given method unbound from its prototype so
@@ -85,7 +85,7 @@ define(
             slice = fn(arraySlice);
             
         // Exports.
-        fn.proto = FunctionPrototype,
+        fn.proto = FunctionPrototype;
         fn.bind = bind;
         fn.partial = partial;
         fn.apply = apply;
