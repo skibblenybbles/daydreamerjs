@@ -1,17 +1,17 @@
 define(
     [
         "./_base",
-        "../language/_base",
+        "../kernel",
         "../array/each",
         // Mixins.
         "./each"
     ],
-    function(object, language, array) {
+    function(object, kernel, array) {
         
         var 
-            // Convenience / compression aliases.
-            lname = language.lname,
-            nil = language.nil,
+            // Imports.
+            lname = kernel.lname,
+            nil = kernel.nil,
             
             arrayslice = array.slice,
             arrayeach = array.each,

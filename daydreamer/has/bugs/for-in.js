@@ -5,7 +5,7 @@ define(
     function(has) {
         
         var
-            // Convenience / compression aliases.
+            // Imports.
             add = has.add,
             
             // Inspect for...in behavior when we iterate over
@@ -29,7 +29,8 @@ define(
         // Note: this is targeted to a known bug in IE6-8. It's not
         // robust, because it does not make any attempt to find shadowed
         // properties. Rather, it tests for the shadowing of "toString"
-        // and can be used to infer a known set of shadowed properties.
+        // and can be used to infer a known set of shadowed properties
+        // which are defined in language/for-in.
         add("bug-for-in-skips-shadowed", function() {
             return inspect(0);
         });

@@ -1,21 +1,23 @@
 define(
     [
-        "../language/_base"
+        "../kernel"
     ],
-    function(language) {
+    function(kernel) {
         
         var
-            // Convenience / compression aliases.
-            root = language.root,
-            pname = language.pname,
-            nil = language.nil,
+            // Imports.
+            root = kernel.root,
+            pname = kernel.pname,
+            nil = kernel.nil,
+            kernelArray = kernel.array,
             
+            // Aliases.
             Object = root.Object,
             
             Array = root.Array,
             ArrayPrototype = Array[pname],
-            arraySlice = ArrayPrototype.slice,
             arrayConcat = ArrayPrototype.concat,
+            arraySlice = ArrayPrototype.slice,
             
             Function = root.Function,
             FunctionPrototype = Function[pname],
@@ -79,17 +81,21 @@ define(
             apply = fn(functionApply),
             call = fn(functionCall),
             
-            // REDUNDANT!
-            // Avoid circular imports by redefining a few utilties.
+            // Array utilities. We'll export these to the kernel
+            // so this module's dependencies and the array module.
             concat = fn(arrayConcat),
             slice = fn(arraySlice);
-            
+        
         // Exports.
         fn.proto = FunctionPrototype;
         fn.bind = bind;
         fn.partial = partial;
         fn.apply = apply;
         fn.call = call;
+        
+        // Kernel exports.
+        kernelArray.concat = concat;
+        kernelArray.slice = slice;
         
         return fn;
     }

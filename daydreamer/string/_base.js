@@ -1,15 +1,15 @@
 define(
     [
-        "../language/_base",
+        "../kernel",
         "../function/_base"
     ],
-    function(language, fn) {
+    function(kernel, fn) {
         
         var
-            // Convenience / compression aliases.
-            root = language.root,
-            pname = language.pname,
-            lname = language.lname,
+            // Imports.
+            root = kernel.root,
+            pname = kernel.pname,
+            lname = kernel.lname,
             
             Math = root.Math,
             min = Math.min,

@@ -1,18 +1,14 @@
 define(
     [
         "./_base",
-        "../language/_base",
         // Mixins.
         "./each",
         "./reduce"
     ],
-    function(array, language) {
+    function(array) {
         
         var
-            // Convenience / compression aliases.
-            nil = language.nil,
-            
-            push = array.push,
+            // Imports.
             slice = array.slice,
             reverse = array.reverse,
             sort = array.sort,

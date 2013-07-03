@@ -15,14 +15,10 @@
             paths: {
                 "tests": "../tests"
             },
-            //baseUrl: "build/production",
             urlArgs: "bust=" +  (new Date()).getTime(),
             config: {
                 "has/_base": {
-                    does: [],
-                    doesNot: [
-                        "array-foreach"
-                    ]
+                    "array-foreach": false
                 }
             }
         };

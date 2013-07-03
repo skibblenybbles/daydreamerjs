@@ -1,56 +1,50 @@
 define(
     [
         "./_base",
-        "../object/_base"
+        "../kernel"
     ],
-    function(language, object) {
+    function(language, kernel) {
         
         var
-            // The global object.
-            root = language.root,
-            undef = language.undef,
-            nil = language.nil,
+            // Imports.
+            root = kernel.root,
+            undef = kernel.undef,
+            nil = kernel.nil,
+            kernelLanguage = kernel.language,
+            kernelObject = kernel.object,
             
-            // Convenience / compression aliases.
+            isNumber = kernelLanguage.isNumber,
+            isString = kernelLanguage.isString,
+            isFunction = kernelLanguage.isFunction,
+            isHostType = kernelLanguage.isHostType,
+            
+            string = kernelObject.string,
+            
+            // Aliases.
             Number = root.Number,
             String = root.String,
             Boolean = root.Boolean,
             Object = root.Object,
             Array = root.Array,
             ArrayIsArray = Array.isArray,
-            string = object.string,
             
             // String names of built-in types.
             // We'll use the "typeof" names for well-behaved types and 
             // the "nativeToString()" names for typeofs that don't behave similarly
             // across platforms.
-            nameUndefined = typeof undef,
-            nameNumber = typeof 0,
-            nameString = typeof "",
             nameBoolean = typeof true,
             nameObject = typeof {},
             nameArray = string([]),
             nameRegExp = string(/ /),
-            nameFunction = string(function() {}),
             
             // Is the given object undef?
             isUndefined = function(obj) {
                 return obj === undef;
             },
             
-            // Is the given object a Number?
-            isNumber = function(obj) {
-                return typeof obj === nameNumber || obj instanceof Number;
-            },
-            
             // Is the given object a finite Number?
             isFiniteNumber = function(obj) {
                 return isNumber(obj) && isFinite(obj);
-            },
-            
-            // Is the given object a String?
-            isString = function(obj) {
-                return typeof obj === nameString || obj instanceof String;
             },
             
             // Is the given object a Boolean?
@@ -103,11 +97,6 @@ define(
                 return string(obj) === nameRegExp;
             },
             
-            // Is the given object a Function?
-            isFunction = function(obj) {
-                return string(obj) === nameFunction;
-            },
-            
             // Is the given object a built-in or something else that
             // should be reported as a function? This is called an 
             // "alien" in Crockford's terminology.
@@ -115,36 +104,7 @@ define(
                 return obj &&
                     !isFunction(obj) &&
                     /\{\s*\[native code]\]\s*\}/.test(String(obj));
-            },
-            
-            // Is the given object or property a special type provided by
-            // the host environment, which may vary across environments?
-            // This is used by the has.js implementation. Use it at your 
-            // own risk.
-            nonHostTypes = {},
-            isHostType = function(obj, property) {
-                var value = get(obj, property),
-                    type = typeof value;
-                return type === nameObject ?
-                    !!value
-                    : !nonHostTypes[type];
-            },
-            
-            // Safely gets a value, given an object and property.
-            // This masks lookups like obj[undef].
-            get = function(obj, property) {
-                return typeof property !== nameUndefined
-                    ? obj !== nil && typeof obj !== nameUndefined
-                        ? obj[property]
-                        : undef
-                    : obj;
             };
-        
-        // Populate the non-host types.
-        nonHostTypes[nameUndefined] = true;
-        nonHostTypes[nameNumber] = true;
-        nonHostTypes[nameString] = true;
-        nonHostTypes[nameBoolean] = true;
         
         // Exports.
         language.isUndefined = isUndefined;

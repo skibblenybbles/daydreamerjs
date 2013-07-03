@@ -1,28 +1,26 @@
 define(
     [
         "./_base",
-        "../language/_base"
+        "../kernel"
     ],
-    function(fn, language) {
+    function(fn, kernel) {
         
         var
-            // Convenience / compression aliases.
+            // Imports.
+            root = kernel.root,
+            pname = kernel.pname,
+            lname = kernel.lname,
+            nil = kernel.nil,
+            kernelArray = kernel.array,
+            kernelLanguage = kernel.language,
+            
+            concat = kernelArray.concat,
+            slice = kernelArray.slice,
+            
+            isFunction = kernelLanguage.isFunction,
+            
             apply = fn.apply,
             call = fn.call,
-            
-            root = language.root,
-            pname = language.pname,
-            lname = language.lname,
-            nil = language.nil,
-            
-            Object = root.Object,
-            ObjectPrototype = Object[pname],
-            objectToString = ObjectPrototype.toString,
-            
-            Array = root.Array,
-            ArrayPrototype = Array[pname],
-            arraySlice = ArrayPrototype.slice,
-            arrayConcat = ArrayPrototype.concat,
             
             // The identity function.
             identity = function(value) {
@@ -89,19 +87,7 @@ define(
                     }
                     return value;
                 };
-            },
-            
-            // REDUNDANT!
-            // Avoid circular imports by redefining a few utilties.
-            concat = fn(arrayConcat),
-            slice = fn(arraySlice),
-            string = fn(objectToString),
-            
-            nameFunction = string(function() {}),
-            isFunction = function(obj) {
-                return string(obj) === nameFunction;
             };
-        
         
         // Exports.
         fn.identity = identity;

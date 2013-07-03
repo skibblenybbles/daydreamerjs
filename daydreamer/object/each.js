@@ -1,28 +1,30 @@
 define(
     [
         "./_base",
-        "../language/_base",
-        "../function/_base",
+        "../kernel",
         "../has/bugs/for-in",
+        "../language/for-in",
+        "../function/_base",
         // Mixins.
         "../language/core",
         "../language/for-in"
     ],
-    function(object, language, fn, has) {
+    function(object, kernel, has, language, fn) {
         
         var 
-            // Convenience / compression aliases.
-            owns = object.owns,
+            // Imports.
+            cname = kernel.cname,
+            lname = kernel.lname,
+            undef = kernel.undef,
+            nil = kernel.nil,
+            
             shadowed = language.shadowed,
             shadowedLength = shadowed.length,
             
-            cname = language.cname,
-            lname = language.lname,
-            undef = language.undef,
-            nil = language.nil,
-            
             call = fn.call,
             partial = fn.partial,
+            
+            owns = object.owns,
             
             // An empty object for reference.
             empty = {},

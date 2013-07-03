@@ -1,22 +1,22 @@
 define(
     [
         "./_base",
-        // TEMP!
-        "../has/_base",
-        // ENDTEMP!
-        "../language/core",
+        "../kernel",
+        "../has/array",
         "../function/_base"
     ],
-    function(array, has, language, fn) {
+    function(array, kernel, has, fn) {
         
         var
-            // Convenience / compression aliases.
-            root = language.root,
-            pname = language.pname,
-            lname = language.lname,
-            undef = language.undef,
-            nil = language.nil,
-            isNumber = language.isNumber,
+            // Imports.
+            root = kernel.root,
+            pname = kernel.pname,
+            lname = kernel.lname,
+            undef = kernel.undef,
+            nil = kernel.nil,
+            kernelLanguage = kernel.language,
+            
+            isNumber = kernelLanguage.isNumber,
             
             partial = fn.partial,
             call = fn.call,

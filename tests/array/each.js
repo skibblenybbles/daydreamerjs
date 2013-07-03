@@ -1,9 +1,9 @@
 define(
     [
         "array/each"
-    ], 
+    ],
     function(array) {
-    
+        
         var root = this;
         
         module("array/each | each()");
@@ -23,7 +23,7 @@ define(
             array.each([null, null], function() { sum++; });
             ok(sum === 2);
         });
-    
+        
         test("this context", function() {
             var obj = {};
             
@@ -45,7 +45,8 @@ define(
                     Math.PI,
                     {},
                     [],
-                    function() {}],
+                    function() {},
+                    / /],
                 i = 0;
         
             array.each(values, function(value) {
@@ -53,7 +54,7 @@ define(
                 i++;
             });
         });
-    
+        
         test("index argument", function() {
             var i;
         

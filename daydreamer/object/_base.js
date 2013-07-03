@@ -1,26 +1,27 @@
 define(
     [
-        "../language/_base",
+        "../kernel",
         "../function/_base"
     ],
-    function(language, fn) {
+    function(kernel, fn) {
         
         var 
-            // Convenience / compression aliases.
-            root = language.root,
-            pname = language.pname,
+            // Imports.
+            root = kernel.root,
+            pname = kernel.pname,
+            kernelObject = kernel.object,
+            
+            string = kernelObject.string,
             
             Object = root.Object,
             ObjectPrototype = Object[pname],
             
             objectHasOwnProperty = ObjectPrototype.hasOwnProperty,
-            objectToString = ObjectPrototype.toString,
             objectValueOf = ObjectPrototype.valueOf,
             
             // "Unbind" object's methods so they can be called
             // in functional style. Use shorter names for the built-ins.
             owns = fn(objectHasOwnProperty),
-            string = fn(objectToString),
             value = fn(objectValueOf),
             
             // object()

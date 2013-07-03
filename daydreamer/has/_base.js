@@ -1,24 +1,21 @@
 define(
     [
-        "../language/core",
+        "../kernel",
         "module"
     ],
-    function(language, module) {
+    function(kernel, module) {
         
         var
-            // The configuration.
-            config = module.config(),
-            does = config.does || [],
-            doesNot = config.doesNot || [],
-            overrides = {},
+            // The overrides configuration.
+            overrides = module.config(),
             
-            // Convenience / compression aliases.
-            isString = language.isString,
-            isFunction = language.isFunction,
-            isHostType = language.isHostType,
+            // Imports.
+            root = kernel.root,
+            kernelLanguage = kernel.language,
             
-            // The global object.
-            root = language.root,
+            isString = kernelLanguage.isString,
+            isFunction = kernelLanguage.isFunction,
+            isHostType = kernelLanguage.isHostType,
             
             // The document object.
             doc = isHostType(root, "document") && root.document,
@@ -41,21 +38,17 @@ define(
             
             // Add a test, optionally immediately evaluated.
             add = function(name, test, immediate) {
-                // TEMP!
                 cache[name] = name in overrides
                     ? overrides[name]
                     : immediate 
                         ? test(root, doc, div) 
                         : test;
-                
-                // ORIGINAL
-                //cache[name] = immediate ? test(root, doc, div) : test;
             },
             
             // Test support for a CSS property on an optional DOM element.
             // The element defaults to the generic testing <div> element.
             prefixes = ["Webkit", "Moz", "O", "ms", "Khtml"],
-            cssProperty = function(name, element) {
+            css = function(name, element) {
                 var style,
                     length,
                     i;
@@ -69,8 +62,8 @@ define(
                     // Capitalize the first letter in the name.
                     name = name.slice(0, 1).toUpperCase() + 
                         name.slice(1);
-                    for (i = 0, length = prefixes.length; i < length; i += 1) {
-                        if (isString(style, [prefixes[i], name].join(""))) {
+                    for (i = 0, length = prefixes.length; i < length; i ++) {
+                        if (isString(style[prefixes[i] + name])) {
                             return true;
                         }
                     }
@@ -80,34 +73,18 @@ define(
             
             // Clear the optional DOM element of all children.
             // Defaults to the generic testing <div> element.
-            clearElement = function(element) {
+            clear = function(element) {
                 element = element || div;
                 while (element.lastChild) {
                     element.removeChild(element.lastChild);
                 }
                 return element;
-            },
-            
-            length,
-            i;
-        
-        // Set up the overrides.
-        for (i = 0, length = does.length; i < length; i++) {
-            overrides[does[i]] = true;
-        }
-        for (i = 0, length = doesNot.length; i < length; i++) {
-            overrides[doesNot[i]] = false;
-        }
-        
-        // TEMP!
-        add("array-foreach", function() {
-            return !!root.Array.prototype.forEach;
-        });
+            };
         
         // Exports.
         has.add = add;
-        has.cssProperty = cssProperty;
-        has.clearElement = clearElement;
+        has.css = css;
+        has.clear = clear;
         
         return has;
     }

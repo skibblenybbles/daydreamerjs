@@ -1,20 +1,22 @@
 define(
     [
         "./_base",
-        "../language/core",
+        "../kernel",
         "../function/_base",
         // Mixins.
         "./each"
     ],
-    function(array, language, fn) {
+    function(array, kernel, fn) {
         
         var
-            // Convenience / compression aliases.
-            root = language.root,
-            pname = language.pname,
-            lname = language.lname,
-            nil = language.nil,
-            isFunction = language.isFunction,
+            // Imports.
+            root = kernel.root,
+            pname = kernel.pname,
+            lname = kernel.lname,
+            nil = kernel.nil,
+            kernelLanguage = kernel.language,
+            
+            isFunction = kernelLanguage.isFunction,
             
             partial = fn.partial,
             call = fn.call,

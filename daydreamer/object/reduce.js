@@ -1,14 +1,16 @@
 define(
     [
         "./_base",
-        "../language/core",
+        "../kernel",
         "../function/_base"
     ],
-    function(object, language, fn) {
+    function(object, kernel, fn) {
         
         var
-            // Convenience / compression aliases.
-            isFunction = language.isFunction,
+            // Imports.
+            kernelLanguage = kernel.language,
+            
+            isFunction = kernelLanguage.isFunction,
             
             partial = fn.partial,
             call = fn.call,
