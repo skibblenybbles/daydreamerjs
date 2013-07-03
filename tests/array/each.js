@@ -6,6 +6,8 @@ define(
         
         var root = this;
         
+        
+        
         module("array/each | each()");
         
         test("basics", function() {
@@ -83,6 +85,17 @@ define(
             array.each(values, function(value, index, array) {
                 ok(array === values);
             });
+        });
+        
+        test("return", function() {
+            var undef = void 0;
+            
+            ok(undef === array.each([], function() {}));
+            ok(undef === array.each([null], function() {}));
+            ok(undef === array.each([null, null], function() {}));
+            ok(undef === array.each([], function() { return true; }));
+            ok(undef === array.each([null], function() { return true; }));
+            ok(undef === array.each([null, null], function() { return true; }));
         });
     }
 );

@@ -130,9 +130,11 @@ define(
                         mkunop(fn, context || root),
                         nil, nil, nil, step);
                     
-                    return result !== undef
-                        ? result
-                        : defaultResult;
+                    if (defaultResult !== undef) {
+                        return result !== undef
+                            ? result
+                            : defaultResult;
+                    }
                 };
             },
             

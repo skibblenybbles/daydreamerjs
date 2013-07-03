@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
     
+    // Set up the plugin configurations.
     grunt.initConfig({
         
         // JSHint config.
