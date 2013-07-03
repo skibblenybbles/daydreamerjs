@@ -1,6 +1,8 @@
 define(
-    [],
-    function() {
+    [
+        "module"
+    ],
+    function(module) {
         
         var
             // The root object.

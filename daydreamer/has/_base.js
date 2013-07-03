@@ -1,10 +1,17 @@
 define(
     [
-        "../language/core"
+        "../language/core",
+        "module"
     ],
-    function(language) {
+    function(language, module) {
         
         var
+            // The configuration.
+            config = module.config(),
+            does = config.does || [],
+            doesNot = config.doesNot || [],
+            overrides = {},
+            
             // Convenience / compression aliases.
             isString = language.isString,
             isFunction = language.isFunction,
@@ -34,7 +41,15 @@ define(
             
             // Add a test, optionally immediately evaluated.
             add = function(name, test, immediate) {
-                cache[name] = immediate ? test(root, doc, div) : test;
+                // TEMP!
+                cache[name] = name in overrides
+                    ? overrides[name]
+                    : immediate 
+                        ? test(root, doc, div) 
+                        : test;
+                
+                // ORIGINAL
+                //cache[name] = immediate ? test(root, doc, div) : test;
             },
             
             // Test support for a CSS property on an optional DOM element.
@@ -71,8 +86,23 @@ define(
                     element.removeChild(element.lastChild);
                 }
                 return element;
-            };
+            },
+            
+            length,
+            i;
         
+        // Set up the overrides.
+        for (i = 0, length = does.length; i < length; i++) {
+            overrides[does[i]] = true;
+        }
+        for (i = 0, length = doesNot.length; i < length; i++) {
+            overrides[doesNot[i]] = false;
+        }
+        
+        // TEMP!
+        add("array-foreach", function() {
+            return !!root.Array.prototype.forEach;
+        });
         
         // Exports.
         has.add = add;

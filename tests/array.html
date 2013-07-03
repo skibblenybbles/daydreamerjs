@@ -2,35 +2,35 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>QUnit basic example</title>
+    <title>daydreamer/array</title>
     <link rel="stylesheet" href="/node_modules/grunt-contrib-qunit/test/libs/qunit.css">
     
     <script src="/node_modules/grunt-contrib-qunit/test/libs/qunit.js"></script>
     <script>
+        QUnit.config.autostart = false;
+    </script>
+    <script>
         var require = {
             baseUrl: "/daydreamer",
+            paths: {
+                "tests": "../tests"
+            },
             //baseUrl: "build/production",
-            urlArgs: "bust=" +  (new Date()).getTime()
+            urlArgs: "bust=" +  (new Date()).getTime(),
+            config: {
+                "has/_base": {
+                    does: [],
+                    doesNot: [
+                        "array-foreach"
+                    ]
+                }
+            }
         };
     </script>
     <script src="/components/requirejs/require.js"></script>
-    
     <script>
-    
-    test("a basic test example", 
-        function() {
-            var value = "hello";
-            equal(value, "hello", "We expect value to be hello");
-        });
-    
-    asyncTest("load something with require",
-        function() {
-            require(["daydreamer"], function(daydreamer) {
-                ok(daydreamer);
-                start();
-            });
-        });
-    
+        stop();
+        require(["tests/array"], start);
     </script>
 </head>
 <body>

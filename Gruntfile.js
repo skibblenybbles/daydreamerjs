@@ -5,14 +5,12 @@ module.exports = function(grunt) {
         // JSHint config.
         jshint: {
             options: {
-                // Turn off line-separated x ? y : z warnings.
+                // Turn off line-separated "x ? y : z" warnings.
                 "-W014": false,
             },
             src: [
                 "./Gruntfile.js",
-                "./daydramer/*.js",
-                "./daydreamer/**/*.js",
-                "./daydreamer/**/**/*.js"
+                "./daydreamer/**/*.js"
             ]
         },
         
@@ -81,7 +79,7 @@ module.exports = function(grunt) {
         qunit: {
             options: {
                 urls: [
-                    "http://localhost:8081/tests/example.html"
+                    "http://localhost:8081/tests/array.html"
                 ]
             },
             test: {}
@@ -100,5 +98,4 @@ module.exports = function(grunt) {
     grunt.registerTask("quick", ["jshint", "requirejs"]);
     grunt.registerTask("test", ["connect:test", "qunit:test"]);
     grunt.registerTask("serve", "connect:serve");
-    
 };

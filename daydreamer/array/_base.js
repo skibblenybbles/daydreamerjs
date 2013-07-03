@@ -5,7 +5,7 @@ define(
     ],
     function(language, fn) {
         
-        var
+        var 
             // Convenience / compression aliases.
             root = language.root,
             pname = language.pname,

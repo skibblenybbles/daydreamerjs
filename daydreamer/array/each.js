@@ -1,10 +1,13 @@
 define(
     [
         "./_base",
+        // TEMP!
+        "../has/_base",
+        // ENDTEMP!
         "../language/core",
         "../function/_base"
     ],
-    function(array, language, fn) {
+    function(array, has, language, fn) {
         
         var
             // Convenience / compression aliases.
@@ -46,7 +49,7 @@ define(
                     result,
                     i;
                 
-                context = context || this;
+                context = context || root;
                 step = step || 1;
                 start = isNumber(start)
                     ? start >= 0
@@ -87,7 +90,7 @@ define(
             imkunop = function(op, fn, context) {
                 return function(stop, value, i, array) {
                     return op(stop,
-                        call(fn, context || this,
+                        call(fn, context || root,
                             value, i, array),
                         value, i, array);
                 };
@@ -124,7 +127,7 @@ define(
             mkeach = function(step, mkunop, defaultResult) {
                 return function(array, fn, context) {
                     var result = ieach(array,
-                        mkunop(fn, context || this),
+                        mkunop(fn, context || root),
                         nil, nil, nil, step);
                     
                     return result !== undef
@@ -145,7 +148,7 @@ define(
             },
             
             // Polyfill array's methods and add find, rfind and sliced.
-            each = arrayForEach
+            each = has("array-foreach")
                 ? fn(arrayForEach)
                 : mkeach(1, id),
             
@@ -186,7 +189,7 @@ define(
                     }, nil, start, end, step);
                 return results;
             };
-            
+        
         // Exports.
         array.ieach = ieach;
         array.each = each;
