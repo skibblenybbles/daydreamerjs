@@ -79,7 +79,8 @@ module.exports = function(grunt) {
         qunit: {
             options: {
                 urls: [
-                    "http://localhost:8081/tests/array.html"
+                    "http://localhost:8081/tests/array.html",
+                    "http://localhost:8081/tests/array-legacy.html"
                 ]
             },
             test: {}
