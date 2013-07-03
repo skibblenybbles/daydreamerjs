@@ -24,7 +24,7 @@ define(
             doc = isHostType(root, "document") && root.document,
             
             // A generic <div> for element testing.
-            div = doc && 
+            div = doc &&
                 isHostType(doc, "createElement") && 
                 doc.createElement("DiV"),
             
