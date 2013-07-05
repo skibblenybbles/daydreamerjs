@@ -21,6 +21,7 @@ define(
             partial = fn.partial,
             call = fn.call,
             
+            // Aliases.
             Math = root.Math,
             min = Math.min,
             max = Math.max,
@@ -149,7 +150,8 @@ define(
                 };
             },
             
-            // Polyfill array's methods and add find, rfind and sliced.
+            // Polyfill any missing array iteration methods and add reversed
+            // versions for convenience.
             each = has("array-foreach")
                 ? fn(arrayForEach)
                 : mkeach(1, id),

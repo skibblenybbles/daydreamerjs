@@ -11,17 +11,17 @@ define(
             pname = kernel.pname,
             kernelObject = kernel.object,
             
+            owns = kernelObject.owns,
             string = kernelObject.string,
             
+            // Aliases.
             Object = root.Object,
             ObjectPrototype = Object[pname],
             
-            objectHasOwnProperty = ObjectPrototype.hasOwnProperty,
             objectValueOf = ObjectPrototype.valueOf,
             
             // "Unbind" object's methods so they can be called
-            // in functional style. Use shorter names for the built-ins.
-            owns = fn(objectHasOwnProperty),
+            // in functional style.
             value = fn(objectValueOf),
             
             // object()

@@ -28,7 +28,7 @@ define(
             arrayUnshift = ArrayPrototype.unfshift,
             
             // "Unbind" Array's methods so they can be called
-            // in functional style. Use better names throughout.
+            // in functional style.
             join = fn(arrayJoin),
             pop = fn(arrayPop),
             push = fn(arrayPush),

@@ -12,10 +12,13 @@ define(
             // Imports.
             root = kernel.root,
             kernelLanguage = kernel.language,
+            kernelObject = kernel.object,
             
             isString = kernelLanguage.isString,
             isFunction = kernelLanguage.isFunction,
             isHostType = kernelLanguage.isHostType,
+            
+            owns = kernelObject.owns,
             
             // The document object.
             doc = isHostType(root, "document") && root.document,
@@ -25,24 +28,34 @@ define(
                 isHostType(doc, "createElement") && 
                 doc.createElement("DiV"),
             
+            // The set of calculated test names.
+            calculated = {},
+            
             // The cache of has() test results.
             cache = {},
             
             // Does the environment has the given feature?
             has = function(name) {
-                if (isFunction(cache[name])) {
-                    cache[name] = cache[name](root, doc, div);
+                if (!owns(calculated, name)) {
+                    if (isFunction(cache[name])) {
+                        cache[name] = cache[name](root, doc, div);
+                    }
+                    calculated[name] = true;
                 }
                 return cache[name];
             },
             
             // Add a test, optionally immediately evaluated.
             add = function(name, test, immediate) {
-                cache[name] = name in overrides
-                    ? overrides[name]
-                    : immediate 
-                        ? test(root, doc, div) 
-                        : test;
+                if (owns(overrides, name)) {
+                    cache[name] = overrides[name];
+                    calculated[name] = true;
+                } else if (immediate) {
+                    cache[name] = test(root, doc, div);
+                    calculated[name] = true;
+                } else {
+                    cache[name] = test;
+                }
             },
             
             // Test support for a CSS property on an optional DOM element.

@@ -24,6 +24,7 @@ define(
             arrayPush = array.push,
             ieach = array.ieach,
             
+            // Aliases.
             Array = root.Array,
             ArrayPrototype = Array[pname],
             
@@ -112,7 +113,8 @@ define(
                 };
             },
             
-            // Polyfill array's methods.
+            // Polyfill any missing array reduction methods and add reversed
+            // versions for convenience.
             map = arrayMap
                 ? fn(arrayMap)
                 : mkreduction(ireduce, push, mkarray),

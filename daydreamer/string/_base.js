@@ -11,6 +11,7 @@ define(
             pname = kernel.pname,
             lname = kernel.lname,
             
+            // Aliases.
             Math = root.Math,
             min = Math.min,
             max = Math.max,
@@ -46,7 +47,7 @@ define(
             stringTrimRight = StringPrototype.trimRight,
             
             // "Unbind" String's methods so they can be called
-            // in functional style. Use better names throughout.
+            // in functional style.
             
             // TODO: research bugs in these!
             chr = fn(stringCharAt),

@@ -26,9 +26,15 @@ define(
             // Aliases.
             Object = root.Object,
             ObjectPrototype = Object[pname],
+            objectHasOwnProperty = ObjectPrototype.hasOwnProperty,
             objectToString = ObjectPrototype.toString,
             
             Number = root.Number,
+            
+            // Call Object's hasOwnProperty() on the given object.
+            owns = function(obj, property) {
+                return objectHasOwnProperty.call(obj, property);
+            },
             
             // Call Object's toString() on the given object.
             string = function(obj) {
@@ -109,6 +115,7 @@ define(
             isHostType: isHostType
         };
         kernel.object = {
+            owns: owns,
             string: string
         };
         

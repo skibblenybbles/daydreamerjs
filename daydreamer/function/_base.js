@@ -82,7 +82,8 @@ define(
             call = fn(functionCall),
             
             // Array utilities. We'll export these to the kernel
-            // so this module's dependencies and the array module.
+            // so this module's dependencies and the array module
+            // can use them.
             concat = fn(arrayConcat),
             slice = fn(arraySlice);
         

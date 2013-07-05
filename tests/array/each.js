@@ -25,31 +25,31 @@ define(
         module("array/each | ieach()");
         
         test("basics", function() {
-            var sum;
+            var count;
             
-            sum = 0;
-            array.ieach([], function() { sum++; });
-            ok(sum === 0);
+            count = 0;
+            array.ieach([], function() { count++; });
+            ok(count === 0);
             
-            sum = 0;
-            array.ieach([null], function() { sum++; });
-            ok(sum === 1);
+            count = 0;
+            array.ieach([null], function() { count++; });
+            ok(count === 1);
             
-            sum = 0;
-            array.ieach([null, null], function() { sum++; });
-            ok(sum === 2);
+            count = 0;
+            array.ieach([null, null], function() { count++; });
+            ok(count === 2);
             
-            sum = 0;
-            array.ieach([], function() { sum++; }, null, null, null, -1);
-            ok(sum === 0);
+            count = 0;
+            array.ieach([], function() { count++; }, null, null, null, -1);
+            ok(count === 0);
             
-            sum = 0;
-            array.ieach([null], function() { sum++; }, null, null, null, -1);
-            ok(sum === 1);
+            count = 0;
+            array.ieach([null], function() { count++; }, null, null, null, -1);
+            ok(count === 1);
             
-            sum = 0;
-            array.ieach([null, null], function() { sum++; }, null, null, null, -1);
-            ok(sum === 2);
+            count = 0;
+            array.ieach([null, null], function() { count++; }, null, null, null, -1);
+            ok(count === 2);
         });
         
         test("callback this context", function() {
@@ -67,50 +67,36 @@ define(
         test("callback stop argument", function() {
             var obj = {},
                 undef = void 0,
-                sum;
+                count;
             
-            sum = 0;
-            ok(obj === array.ieach([null, null], function(stop) {
-                sum++;
-                return stop(obj);
-            }));
-            ok(sum === 1);
-            
-            sum = 0;
+            count = 0;
             ok(undef === array.ieach([null, null], function(stop) {
-                sum++;
+                count++;
                 return stop();
             }));
-            ok(sum === 1);
+            ok(count === 1);
             
-            sum = 0;
+            count = 0;
+            ok(obj === array.ieach([null, null], function(stop) {
+                count++;
+                return stop(obj);
+            }));
+            ok(count === 1);
+            
+            count = 0;
+            ok(undef === array.ieach([null, null], function(stop) {
+                stop();
+                count++;
+            }));
+            ok(count === 1);
+            
+            count = 0;
             ok(obj === array.ieach([null, null], function(stop) {
                 stop();
-                sum++;
+                count++;
                 return obj;
             }));
-            ok(sum === 1);
-            
-            sum = 0;
-            ok(undef === array.ieach([null, null], function(stop) {
-                stop();
-                sum++;
-            }));
-            ok(sum === 1);
-            
-            sum = 0;
-            ok(obj === array.ieach([null, null], function(stop) {
-                return stop(obj);
-                sum++;
-            }));
-            ok(sum === 0);
-            
-            sum = 0;
-            ok(undef == array.ieach([null, null], function(stop) {
-                return stop();
-                sum++;
-            }));
-            ok(sum === 0);
+            ok(count === 1);
         });
         
         test("callback value argument", function() {
@@ -168,19 +154,19 @@ define(
         module("array/each | each()");
         
         test("basics", function() {
-            var sum;
+            var count;
             
-            sum = 0;
-            array.each([], function() { sum++; });
-            ok(sum === 0);
+            count = 0;
+            array.each([], function() { count++; });
+            ok(count === 0);
         
-            sum = 0;
-            array.each([null], function() { sum++; });
-            ok(sum === 1);
+            count = 0;
+            array.each([null], function() { count++; });
+            ok(count === 1);
         
-            sum = 0;
-            array.each([null, null], function() { sum++; });
-            ok(sum === 2);
+            count = 0;
+            array.each([null, null], function() { count++; });
+            ok(count === 2);
         });
         
         test("callback this context", function() {
