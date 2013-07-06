@@ -5,7 +5,7 @@ define(
         "./has/array",
         "./has/bugs"
     ],
-    function(base) {
-        return base;
+    function(has) {
+        return has;
     }
 );

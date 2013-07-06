@@ -3,16 +3,16 @@ define(
         "./_base",
         "../kernel",
         "../has/array",
-        "../function/_base"
+        "../function/_base",
+        "../iteration/core/each"
     ],
-    function(array, kernel, has, fn) {
+    function(array, kernel, has, fn, iteration) {
         
         var
             // Imports.
             root = kernel.root,
             pname = kernel.pname,
             lname = kernel.lname,
-            undef = kernel.undef,
             nil = kernel.nil,
             kernelLanguage = kernel.language,
             
@@ -20,6 +20,13 @@ define(
             
             partial = fn.partial,
             call = fn.call,
+            
+            id = iteration.id,
+            ifid = iteration.ifid,
+            and = iteration.and,
+            or = iteration.or,
+            mkeach = iteration.mkeach,
+            mkkey = iteration.mkkey,
             
             // Aliases.
             Math = root.Math,
@@ -85,102 +92,53 @@ define(
                 return result;
             },
             
-            // Generate an operator that evaluates a function inside an ieach
-            // loop with the given context and optionally short-circuits or
-            // modifies the result.
-            imkunop = function(op, fn, context) {
-                return function(stop, value, i, array) {
-                    return op(stop,
-                        call(fn, context || root,
-                            value, i, array),
-                        value, i, array);
-                };
-            },
+            // Arguments for a simple reverse ieach iterator.
+            rev = [nil, nil, nil, -1],
             
-            // Identity operator which evaluates a function inside an ieach
-            // loop with the given context.
-            id = partial(imkunop, function(stop, result) {
-                return result;
-            }),
+            // Iterator generators.
+            mkarrayeach = partial(mkeach, 
+                ieach, nil),
+                
+            mkrarrayeach = partial(mkeach,
+                ieach, rev),
             
-            // Short-circuiting identity operator which evaluates a predicate
-            // in the given context to determine whether to return the value.
-            ifid = partial(imkunop, function(stop, result, value) {
-                if (result) {
-                    return stop(value);
-                }
-            }),
+            mkindex = partial(mkkey,
+                ieach, nil, -1),
             
-            // Short-circuiting unary and operator which evaluates a predicate
-            // in the given context to determine what boolean value to return.
-            and = partial(imkunop, function(stop, result) {
-                result = !!result;
-                return !result ? stop(result) : result;
-            }),
-            
-            // Short-circuiting unary or operator which evaluates a predicate
-            // in the given context to determine what boolean value to return.
-            or = partial(imkunop, function(stop, result) {
-                result = !!result;
-                return result ? stop(result) : result;
-            }),
-            
-            mkeach = function(step, mkunop, defaultResult) {
-                return function(array, fn, context) {
-                    var result = ieach(array,
-                        mkunop(fn, context || root),
-                        nil, nil, nil, step);
-                    
-                    if (defaultResult !== undef) {
-                        return result !== undef
-                            ? result
-                            : defaultResult;
-                    }
-                };
-            },
-            
-            mkindex = function(step) {
-                return function(array, item) {
-                    ieach(array, function(stop, value, i) {
-                        if (item === value) {
-                            return stop(i);
-                        }
-                    }, nil, nil, nil, step);
-                    return -1;
-                };
-            },
+            mkrindex = partial(mkkey,
+                ieach, rev, -1),
             
             // Polyfill any missing array iteration methods and add reversed
             // versions for convenience.
             each = has("array-foreach")
                 ? fn(arrayForEach)
-                : mkeach(1, id),
+                : mkarrayeach(id),
             
-            reach = mkeach(-1, id),
+            reach = mkrarrayeach(id),
+            
+            find = mkarrayeach(ifid),
+            
+            rfind = mkrarrayeach(ifid),
             
             all = arrayEvery
                 ? fn(arrayEvery)
-                : mkeach(1, and, true),
+                : mkarrayeach(and, true),
             
-            rall = mkeach(-1, and, true),
+            rall = mkrarrayeach(and, true),
             
             any = arraySome
                 ? fn(arraySome)
-                : mkeach(1, or, false),
+                : mkarrayeach(or, false),
             
-            rany = mkeach(-1, or, false),
-            
-            find = mkeach(1, ifid),
-            
-            rfind = mkeach(-1, ifid),
+            rany = mkrarrayeach(or, false),
             
             index = arrayIndexOf
                 ? fn(arrayIndexOf)
-                : mkindex(1),
+                : mkindex(),
             
             rindex = arrayLastIndexOf
                 ? fn(arrayLastIndexOf)
-                : mkindex(-1),
+                : mkrindex(),
             
             // Return a copy of the given array or array-like object sliced 
             // with positive or negative indexing and optional stepping,

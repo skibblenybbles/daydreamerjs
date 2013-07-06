@@ -2,12 +2,15 @@ define(
     [
         "./_base",
         "../kernel",
-        "../function/_base"
+        "../function/_base",
+        // Mixins.
+        "./reduce"
     ],
     function(object, kernel, fn) {
         
         var
             // Imports.
+            lname = kernel.lname,
             kernelLanguage = kernel.language,
             
             isFunction = kernelLanguage.isFunction,
@@ -23,8 +26,8 @@ define(
             // Generate an iterative object reducer.
             imkreduce = function(ieach) {
                 return function(object, op, initial, context) {
-                    var initialized = arguments.length >= 3,
-                        value = isFunction(initial)
+                    var initialized = arguments[lname] > 2,
+                        value = initialized && isFunction(initial)
                             ? initial()
                             : initial;
                     
@@ -32,8 +35,8 @@ define(
                     ieach(object,
                         function(stop, obj, key, object) {
                             if (initialized) {
-                                value = call(fn, this,
-                                    stop, obj, key, object);
+                                value = call(op, this,
+                                    stop, value, obj, key, object);
                             } else {
                                 value = obj;
                                 initialized = true;
@@ -131,6 +134,10 @@ define(
         object.filtersafe = filtersafe;
         object.filterowned = filterowned;
         object.filtersafeowned = filtersafeowned;
+        object.reduce = reduce;
+        object.reducesafe = reducesafe;
+        object.reduceowned = reduceowned;
+        object.reducesafeowned = reducesafeowned;
         
         return object;
     }

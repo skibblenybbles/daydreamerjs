@@ -4,7 +4,7 @@ define(
         // Mixins.
         "./array/core"
     ],
-    function(base) {
-        return base;
+    function(array) {
+        return array;
     }
 );

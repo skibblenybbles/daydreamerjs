@@ -4,7 +4,7 @@ define(
         "../kernel",
         "../array/each",
         // Mixins.
-        "./each"
+        "./reduce"
     ],
     function(object, kernel, array) {
         
@@ -17,40 +17,41 @@ define(
             arrayeach = array.each,
             arrayreach = array.reach,
             
-            each = object.each,
-            eachsafe = object.eachsafe,
-            eachowned = object.eachowned,
-            eachsafeowned = object.eachsafeowned,
+            reduce = object.reduce,
+            reducesafe = object.reducesafe,
+            reduceowned = object.reduceowned,
+            reducesafeowned = object.reducesafeowned,
             
-            mkmixin = function(step, oeach) {
-                var aeach = step < 0 ? arrayreach : arrayeach;
+            mkmixin = function(reduce, step) {
+                var
+                    aeach = (step || 1) < 0
+                        ? arrayreach
+                        : arrayeach;
                 
                 return function(destination) {
-                    if (!destination) {
-                        destination = {};
-                    }
                     aeach(arrayslice(arguments, 1),
                         function(object) {
-                            oeach(object,
-                                function(value, key) {
-                                    destination[key] = value;
-                                });
+                            destination = reduce(object,
+                                function(acc, value, key) {
+                                    acc[key] = value;
+                                    return acc;
+                                }, destination || {});
                         });
                     return destination;
                 };
             },
             
-            mixin = mkmixin(1, each),
-            rmixin = mkmixin(-1, each),
+            mixin = mkmixin(reduce),
+            rmixin = mkmixin(reduce, -1),
             
-            mixinsafe = mkmixin(1, eachsafe),
-            rmixinsafe = mkmixin(-1, eachsafe),
+            mixinsafe = mkmixin(reducesafe),
+            rmixinsafe = mkmixin(reducesafe, -1),
             
-            mixinowned = mkmixin(1, eachowned),
-            rmixinowned = mkmixin(-1, eachowned),
+            mixinowned = mkmixin(reduceowned),
+            rmixinowned = mkmixin(reduceowned, -1),
             
-            mixinsafeowned = mkmixin(1, eachsafeowned),
-            rmixinsafeowned = mkmixin(-1, eachsafeowned);
+            mixinsafeowned = mkmixin(reducesafeowned),
+            rmixinsafeowned = mkmixin(reducesafeowned, -1);
         
         // Exports.
         object.mixin = mixin;

@@ -5,26 +5,30 @@ define(
         "../has/bugs/for-in",
         "../language/for-in",
         "../function/_base",
-        // Mixins.
-        "../language/core",
-        "../language/for-in"
+        "../iteration/core/each"
     ],
-    function(object, kernel, has, language, fn) {
+    function(object, kernel, has, language, fn, iteration) {
         
         var 
             // Imports.
+            owns = object.owns,
+            
             cname = kernel.cname,
             lname = kernel.lname,
-            undef = kernel.undef,
             nil = kernel.nil,
             
             shadowed = language.shadowed,
-            shadowedLength = shadowed.length,
+            shadowedLength = shadowed[lname],
             
             call = fn.call,
             partial = fn.partial,
             
-            owns = object.owns,
+            id = iteration.id,
+            ifid = iteration.ifid,
+            and = iteration.and,
+            or = iteration.or,
+            mkeach = iteration.mkeach,
+            mkkey = iteration.mkkey,
             
             // An empty object for reference.
             empty = {},
@@ -101,94 +105,38 @@ define(
                 return owns(object, key) && key !== cname;
             }),
             
-            // REDUNDANT!
-            // Generate an operator that evaluates a function inside an ieach
-            // loop with the given context and optionally short-circuits or
-            // modifies the result.
-            imkunop = function(op, fn, context) {
-                return function(stop, value, key, object) {
-                    return op(stop,
-                        call(fn, context || this,
-                            value, key, object),
-                        value, key, object);
-                };
-            },
+            mkobjecteach = partial(mkeach,
+                ieach, nil),
             
-            // REDUNDANT!
-            // Identity operator which evaluates a function inside an ieach
-            // loop with the given context.
-            id = partial(imkunop, function(stop, result) {
-                return result;
-            }),
+            mkobjecteachsafe = partial(mkeach,
+                ieachsafe, nil),
             
-            // REDUNDANT!
-            // Short-circuiting identity operator which evaluates a predicate
-            // in the given context to determine whether to return the value.
-            ifid = partial(imkunop, function(stop, result, value) {
-                if (result) {
-                    return stop(value);
-                }
-            }),
+            mkobjecteachowned = partial(mkeach,
+                ieachowned, nil),
             
-            // REDUNDANT!
-            // Short-circuiting unary and operator which evaluates a predicate
-            // in the given context to determine what boolean value to return.
-            and = partial(imkunop, function(stop, result) {
-                result = !!result;
-                return !result ? stop(result) : result;
-            }),
-            
-            // REDUNDANT!
-            // Short-circuiting unary or operator which evaluates a predicate
-            // in the given context to determine what boolean value to return.
-            or = partial(imkunop, function(stop, result) {
-                result = !!result;
-                return result ? stop(result) : result;
-            }),
-            
-            // Almost REDUNDANT!
-            mkeach = function(ieacher, mkunop, defaultResult) {
-                return function(object, fn, context) {
-                    var result = ieacher(object,
-                        mkunop(fn, context || this));
-                    
-                    return result !== undef
-                        ? result
-                        : defaultResult;
-                };
-            },
-            
-            // Almost REDUNDANT!
-            mkkey = function(ieacher) {
-                return function(object, item) {
-                    ieacher(object, function(stop, value, key) {
-                        if (item === value) {
-                            return stop(key);
-                        }
-                    });
-                };
-            },
+            mkobjecteachsafeowned = partial(mkeach,
+                ieachsafeowned, nil),
             
             // Define array-like iterators.
-            each = mkeach(ieach, id),
-            eachsafe = mkeach(ieachsafe, id),
-            eachowned = mkeach(ieachowned, id),
-            eachsafeowned = mkeach(ieachsafeowned, id),
+            each = mkobjecteach(id),
+            eachsafe = mkobjecteachsafe(id),
+            eachowned = mkobjecteachowned(id),
+            eachsafeowned = mkobjecteachsafeowned(id),
             
-            all = mkeach(ieach, and, true),
-            allsafe = mkeach(ieachsafe, and, true),
-            allowned = mkeach(ieachowned, and, true),
-            allsafeowned = mkeach(ieachsafeowned, and, true),
+            find = mkobjecteach(ifid),
+            findsafe = mkobjecteachsafe(ifid),
+            findowned = mkobjecteachowned(ifid),
+            findsafeowned = mkobjecteachsafeowned(ifid),
             
-            any = mkeach(ieach, or, false),
-            anysafe = mkeach(ieachsafe, or, false),
-            anyowned = mkeach(ieachowned, or, false),
-            anysafeowned = mkeach(ieachsafeowned, or, false),
+            all = mkobjecteach(and, true),
+            allsafe = mkobjecteachsafe(and, true),
+            allowned = mkobjecteachowned(and, true),
+            allsafeowned = mkobjecteachsafeowned(and, true),
             
-            find = mkeach(ieach, ifid),
-            findsafe = mkeach(ieachsafe, ifid),
-            findowned = mkeach(ieachowned, ifid),
-            findsafeowned = mkeach(ieachsafeowned, ifid),
+            any = mkobjecteach(or, false),
+            anysafe = mkobjecteachsafe(or, false),
+            anyowned = mkobjecteachowned(or, false),
+            anysafeowned = mkobjecteachsafeowned(or, false),
             
             key = mkkey(ieach),
             keysafe = mkkey(ieachsafe),

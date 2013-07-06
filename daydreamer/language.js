@@ -5,7 +5,7 @@ define(
         "./language/core",
         "./language/for-in"
     ], 
-    function(base) {
-        return base;
+    function(language) {
+        return language;
     }
 );
