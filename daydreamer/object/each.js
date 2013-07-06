@@ -66,7 +66,7 @@ define(
                         for (i = 0; looping && i < shadowedLength; i++) {
                             key = shadowed[i];
                             value = object[key];
-                            if (allow(key, value)) {
+                            if (allow(value, key, object)) {
                                 result = call(fn, context || this,
                                     stop, value, key, object);
                             }
