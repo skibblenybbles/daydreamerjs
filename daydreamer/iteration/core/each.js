@@ -2,9 +2,10 @@ define(
     [
         "../_base",
         "../../kernel",
+        "../../array/_base",
         "../../function/_base"
     ],
-    function(iteration, kernel, fn) {
+    function(iteration, kernel, array, fn) {
         
         var
             // Imports.
@@ -12,9 +13,8 @@ define(
             lname = kernel.lname,
             undef = kernel.undef,
             nil = kernel.nil,
-            kernelArray = kernel.array,
             
-            concat = kernelArray.concat,
+            concat = array.concat,
             
             apply = fn.apply,
             call = fn.call,

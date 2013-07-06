@@ -3,13 +3,16 @@ define(
         "./_base",
         "../kernel",
         "../function/_base",
+        "../iteration/core/reduce",
         // Mixins.
         "./each"
     ],
-    function(array, kernel, fn) {
+    function(array, kernel, fn, iteration) {
         
         var
             // Imports.
+            ieach = array.ieach,
+            
             root = kernel.root,
             pname = kernel.pname,
             lname = kernel.lname,
@@ -18,11 +21,12 @@ define(
             
             isFunction = kernelLanguage.isFunction,
             
-            partial = fn.partial,
             call = fn.call,
             
-            arrayPush = array.push,
-            ieach = array.ieach,
+            push = iteration.push,
+            ifpush = iteration.ifpush,
+            mkreduction = iteration.mkreduction,
+            mkreduce = iteration.mkreduce,
             
             // Aliases.
             Array = root.Array,
@@ -63,54 +67,9 @@ define(
             // Iterative right reduce.
             irreduce = imkreduce(-1),
             
-            // Generate an operator that evaluates a function inside an
-            // ireduce loop with the given context and optionally short-circuits
-            // or modifies the accumulator.
-            imkbinop = function(op, fn, context) {
-                return function(stop, acc, value, i, array) {
-                    return op(stop, acc,
-                        call(fn, context || this,
-                            value, i, array),
-                        value, i, array);
-                };
-            },
-            
-            // Array-accumulating binary operator which evaluates a function
-            // in the given context to transform the values to accumulate.
-            push = partial(imkbinop, function(stop, acc, result) {
-                arrayPush(acc, result);
-                return acc;
-            }),
-            
-            // Conditional array-accumulating binary operator which evaluates 
-            // a predicate in the given context to determine which of the
-            // values to accumulate.
-            ifpush = partial(imkbinop, function(stop, acc, result, value) {
-                if (result) {
-                    arrayPush(acc, value);
-                }
-                return acc;
-            }),
-            
+            // Make a fresh array.
             mkarray = function() {
                 return [];
-            },
-            
-            mkreduction = function(ireduce, mkbinop, initial) {
-                return function(array, fn, context) {
-                    return ireduce(array, 
-                        mkbinop(fn, context || this), initial);
-                };
-            },
-            
-            mkreduce = function(ireduce) {
-                return function(array, op, initial, context)  {
-                    return ireduce(array,
-                        function(stop, previous, next, i, array) {
-                            return call(op, context || this,
-                                previous, next, i, array);
-                        }, initial || nil);
-                };
             },
             
             // Polyfill any missing array reduction methods and add reversed

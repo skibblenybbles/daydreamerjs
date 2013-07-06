@@ -3,13 +3,19 @@ define(
         "./_base",
         "../kernel",
         "../function/_base",
+        "../iteration/core/reduce",
         // Mixins.
         "./reduce"
     ],
-    function(object, kernel, fn) {
+    function(object, kernel, fn, iteration) {
         
         var
             // Imports.
+            ieach = object.ieach,
+            ieachsafe = object.ieachsafe,
+            ieachowned = object.ieachowend,
+            ieachsafeowned = object.ieachsafeowned,
+            
             lname = kernel.lname,
             kernelLanguage = kernel.language,
             
@@ -18,10 +24,10 @@ define(
             partial = fn.partial,
             call = fn.call,
             
-            ieach = object.ieach,
-            ieachsafe = object.ieachsafe,
-            ieachowned = object.ieachowend,
-            ieachsafeowned = object.ieachsafeowned,
+            mix = iteration.mix,
+            ifmix = iteration.ifmix,
+            mkreduction = iteration.mkreduction,
+            mkreduce = iteration.mkreduce,
             
             // Generate an iterative object reducer.
             imkreduce = function(ieach) {
@@ -52,57 +58,9 @@ define(
             ireduceowned = imkreduce(ieachowned),
             ireducesafeowned = imkreduce(ieachsafeowned),
             
-            // REDUNDANT!
-            // Generate an operator that evaluates a function inside an
-            // ireduce loop with the given context and optionally short-circuits
-            // or modifies the accumulator.
-            imkbinop = function(op, fn, context) {
-                return function(stop, acc, value, key, object) {
-                    return op(stop, acc,
-                        call(fn, context || this,
-                            value, key, object),
-                        value, key, object);
-                };
-            },
-            
-            // Object-accumulating binary operator which evaluates a function
-            // in the given context to transform the values to accumulate.
-            mix = partial(imkbinop, function(stop, acc, result, value, key) {
-                acc[key] = result;
-                return acc;
-            }),
-            
-            // Conditional object-accumulating binary operator which evaluates 
-            // a predicate in the given context to determine which of the
-            // values to accumulate.
-            ifmix = partial(imkbinop, function(stop, acc, result, value, key) {
-                if (result) {
-                    acc[key] = value;
-                }
-                return acc;
-            }),
-            
+            // Make a fresh object.
             mkobject = function() {
                 return {};
-            },
-            
-            // REDUNDANT!
-            mkreduction = function(ireduce, mkbinop, initial) {
-                return function(array, fn, context) {
-                    return ireduce(array, 
-                        mkbinop(fn, context || this), initial);
-                };
-            },
-            
-            // REDUNDANT!
-            mkreduce = function(ireduce) {
-                return function(object, op, initial, context)  {
-                    return ireduce(object,
-                        function(stop, previous, next, key, object) {
-                            return call(op, context || this,
-                                previous, next, key, object);
-                        }, initial || nil);
-                };
             },
             
             // Define array-like reducers.
