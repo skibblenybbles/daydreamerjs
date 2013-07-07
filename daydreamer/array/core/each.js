@@ -1,10 +1,10 @@
 define(
     [
-        "./_base",
-        "../kernel",
-        "../has/array",
-        "../function/_base",
-        "../iteration/core/each"
+        "../_base",
+        "../../kernel",
+        "../../has/array",
+        "../../function/_base",
+        "../../iteration/core/each"
     ],
     function(array, kernel, has, fn, iteration) {
         

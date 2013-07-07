@@ -1,9 +1,9 @@
 define(
     [
-        "./_base",
-        "../kernel",
-        "../function/_base",
-        "../iteration/core/reduce",
+        "../_base",
+        "../../kernel",
+        "../../function/_base",
+        "../../iteration/core/reduce",
         // Mixins.
         "./each"
     ],

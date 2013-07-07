@@ -1,6 +1,6 @@
 define(
     [
-        "array/each"
+        "array/core/each"
     ],
     function(array) {
         
@@ -22,7 +22,7 @@ define(
             ];
         
         ///////////////////////////////////////////////////////////////////////
-        module("array/each | ieach()");
+        module("array/core/each | ieach()");
         
         test("basics", function() {
             var count;
@@ -151,7 +151,7 @@ define(
         
         
         ///////////////////////////////////////////////////////////////////////
-        module("array/each | each()");
+        module("array/core/each | each()");
         
         test("basics", function() {
             var count;
@@ -233,33 +233,33 @@ define(
         
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | reach()");
+        //module("array/core/each | reach()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | all()");
+        //module("array/core/each | all()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | rall()");
+        //module("array/core/each | rall()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | any()");
+        //module("array/core/each | any()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | rany()");
+        //module("array/core/each | rany()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | find()");
+        //module("array/core/each | find()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | rfind()");
+        //module("array/core/each | rfind()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | index()");
+        //module("array/core/each | index()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | rindex()");
+        //module("array/core/each | rindex()");
         
         ///////////////////////////////////////////////////////////////////////
-        //module("array/each | sliced()");
+        //module("array/core/each | sliced()");
     }
 );

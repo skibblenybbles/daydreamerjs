@@ -1,3 +1,3 @@
 define([
-    "./array/each"
+    "./array/core"
 ]);

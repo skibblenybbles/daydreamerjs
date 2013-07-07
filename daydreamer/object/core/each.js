@@ -1,11 +1,11 @@
 define(
     [
-        "./_base",
-        "../kernel",
-        "../has/bugs/for-in",
-        "../language/for-in",
-        "../function/_base",
-        "../iteration/core/each"
+        "../_base",
+        "../../kernel",
+        "../../has/bugs/for-in",
+        "../../language/for-in",
+        "../../function/_base",
+        "../../iteration/core/each"
     ],
     function(object, kernel, has, language, fn, iteration) {
         

@@ -1,8 +1,8 @@
 define(
     [
-        "./_base",
-        "../kernel",
-        "../array/each",
+        "../_base",
+        "../../kernel",
+        "../../array/core/each",
         // Mixins.
         "./reduce"
     ],

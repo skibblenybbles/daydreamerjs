@@ -2,8 +2,8 @@ define(
     [
         "./_base",
         // Mixins.
-        "./each",
-        "./reduce"
+        "./core/each",
+        "./core/reduce"
     ],
     function(array) {
         
